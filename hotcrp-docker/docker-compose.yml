@@ -1,0 +1,33 @@
+###############################################################################
+#                          Generated on phpdocker.io                          #
+###############################################################################
+
+hotcrp-mysql:
+  image: mysql:5.7
+  container_name: hotcrp-mysql
+  environment:
+    - MYSQL_ROOT_PASSWORD=user
+    - MYSQL_DATABASE=hotcrp
+    - MYSQL_USER=user
+    - MYSQL_PASSWORD=user
+
+hotcrp-webserver:
+  image: phpdockerio/nginx:latest
+  container_name: hotcrp-webserver
+  volumes:
+      - ..:/var/www/hotcrp
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+  ports:
+   - "9000:80"
+  links:
+   - hotcrp-php-fpm
+
+hotcrp-php-fpm:
+  build: .
+  dockerfile: php-fpm/Dockerfile
+  container_name: hotcrp-php-fpm
+  volumes:
+    - ..:/var/www/hotcrp
+    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.0/fpm/conf.d/99-overrides.ini
+  links:
+    - hotcrp-mysql
