@@ -82,8 +82,8 @@ while [ $# -gt 0 ]; do
         MYCREATEDB_USER="`echo "$1" | sed s/^-u//`";;
     --u=*|--us=*|--use=*|--user=*)
         MYCREATEDB_USER="`echo "$1" | sed 's/^[^=]*=//'`";;
-    --server=|-s=)
-        SERVERNAME="`echo "$1" | sed s/^-s//`";;
+    --server=*|-s=*)
+        SERVERNAME="`echo "$1" | sed 's/^[^=]*=//'`";;
     -p*)
         PASSWORD="`echo "$1" | sed s/^-p//`";;
     --pas=*|--pass=*|--passw=*|--passwo=*|--passwor=*|--password=*)
@@ -364,9 +364,8 @@ if [ "$createdb" = y ]; then
     eval $MYSQLADMIN $mycreatedb_args $myargs $FLAGS --default-character-set=utf8 create $DBNAME || exit 1
 fi
 
-#SOURCENAME="$SERVERNAME" 
-SOURCENAME="%"
-if [! '$SERVERNAME' = 'localhost' ];
+SOURCENAME="$SERVERNAME" 
+if [ '$SERVERNAME' != 'localhost' ];
 then
 SOURCENAME="%"
 fi
@@ -466,7 +465,7 @@ __EOF__
     test -z "$minimal_options" && awk 'BEGIN { p = 0 }
 /^\$Opt\[.passwordHmacKey/ { p = 1; next }
 { if (p) print }' < "${SRCDIR}${distoptions_file}"
-if [! '$SERVERNAME' = 'localhost' ];
+if [ '$SERVERNAME' != 'localhost' ];
 then
 cat <<__EOF__
 \$Opt["dbHost"] = "$SERVERNAME";
