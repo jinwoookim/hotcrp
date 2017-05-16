@@ -3210,11 +3210,11 @@ class Contact {
 
     function paper_status_info($row, $forceShow = null) {
         if ($row->timeWithdrawn > 0)
-            return array("pstat_with", "Withdrawn");
+            return array("badge-default", "Withdrawn");
         else if ($row->outcome && $this->can_view_decision($row, $forceShow)) {
             $data = get(self::$status_info_cache, $row->outcome);
             if (!$data) {
-                $decclass = ($row->outcome > 0 ? "pstat_decyes" : "pstat_decno");
+                $decclass = ($row->outcome > 0 ? "badge-success" : "badge-danger");
 
                 $decs = $this->conf->decision_map();
                 $decname = get($decs, $row->outcome);
@@ -3229,11 +3229,11 @@ class Contact {
             }
             return $data;
         } else if ($row->timeSubmitted <= 0 && $row->paperStorageId == 1)
-            return array("pstat_noup", "No submission");
+            return array("badge-warning", "No submission");
         else if ($row->timeSubmitted > 0)
-            return array("pstat_sub", "Submitted");
+            return array("badge-primary", "Submitted");
         else
-            return array("pstat_prog", "Not ready");
+            return array("badge-default", "Not ready");
     }
 
 

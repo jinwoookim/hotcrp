@@ -675,7 +675,6 @@ would display the sum of a paper&rsquo;s Overall merit scores.
 }
 
 echo "</div>";
-
 // Tab selectors
 echo '<div class="tllx"><table><tr>',
   "<td><div class='tll1'><a class='tla' onclick='return crpfocus(\"searchform\",1)' href=\"", SelfHref::make($Qreq, ["tab" => null]), "\">Search</a></div></td>

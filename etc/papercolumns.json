@@ -80,6 +80,11 @@
         "priority": 830
     },
     {
+        "name": "commentstat",
+        "column": true, "sort": true, "completion": true, "factory_class": "CommentStatusPaperColumn",
+        "priority": 830
+    },
+    {
         "name": "assrev",
         "column": true, "sort": true, "completion": true, "factory_class": "AssignReviewPaperColumn",
         "priority": 840

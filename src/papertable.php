@@ -2020,8 +2020,8 @@ class PaperTable {
             if ($this->mode === "edit" && ($m = $this->editMessage()))
                 echo $m, "<div class='g'></div>\n";
             $status_info = $Me->paper_status_info($this->prow);
-            echo '<p class="xd"><span class="pstat ', $status_info[0], '">',
-                htmlspecialchars($status_info[1]), "</span></p>";
+            echo '<p class="xd"><div class="badge ', $status_info[0], '">',
+                htmlspecialchars($status_info[1]), "</div></p>";
             $this->paptabDownload();
             if ($this->paptabAbstract())
                 echo '<div class="paptab">';

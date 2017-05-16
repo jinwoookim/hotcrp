@@ -1065,6 +1065,12 @@ class PaperInfo {
             $prow->_comment_array = get($comments, $prow->paperId, []);
     }
 
+
+    function num_comments() {
+        return count($this->fetch_comments());
+    }
+
+
     function all_comments() {
         if ($this->_comment_array === null)
             $this->load_comments();

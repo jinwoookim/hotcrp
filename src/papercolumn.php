@@ -371,9 +371,9 @@ class StatusPaperColumn extends PaperColumn {
             && $pl->contact->can_view_decision($row))
             $pl->mark_has("need_final");
         $status_info = $pl->contact->paper_status_info($row, $pl->search->limitName != "a" && $pl->contact->allow_administer($row));
-        if (!$this->is_long && $status_info[0] == "pstat_sub")
+        if (!$this->is_long && $status_info[0] == "badge-primary")
             return "";
-        return "<span class=\"pstat $status_info[0]\">" . htmlspecialchars($status_info[1]) . "</span>";
+        return "<span class=\"badge $status_info[0]\">" . htmlspecialchars($status_info[1]) . "</span>";
     }
     function text(PaperList $pl, PaperInfo $row) {
         $status_info = $pl->contact->paper_status_info($row, $pl->search->limitName != "a" && $pl->contact->allow_administer($row));
@@ -430,7 +430,52 @@ class ReviewStatusPaperColumn extends PaperColumn {
         return $done . ($done == $started ? "" : "/$started");
     }
 }
+class CommentStatusPaperColumn extends PaperColumn {
+    function __construct($cj) {
+        parent::__construct($cj);
+    }
+    function prepare(PaperList $pl, $visible) {
 
+        if ($pl->contact->privChair)
+            $pl->qopts["startedReviewCount"] = true;
+        else if ($pl->contact->is_reviewer())
+            $pl->qopts["startedReviewCount"] = $pl->qopts["inProgressReviewCount"] = true;
+        else if ($pl->conf->timeAuthorViewReviews())
+            $pl->qopts["inProgressReviewCount"] = true;
+        else
+            return false;
+        return true;
+    }
+    function sort_prepare($pl, &$rows, $sorter) {
+        foreach ($rows as $row) {
+            if (!$pl->contact->can_view_review_assignment($row, null, null))
+                $row->_review_status_sort_info = 2147483647;
+            else
+                $row->_review_status_sort_info = $row->num_reviews_submitted()
+                    + $row->num_reviews_started($pl->contact) / 1000.0;
+        }
+    }
+    function compare(PaperInfo $a, PaperInfo $b) {
+        $av = $a->_review_status_sort_info;
+        $bv = $b->_review_status_sort_info;
+        return ($av < $bv ? 1 : ($av == $bv ? 0 : -1));
+    }
+    function header(PaperList $pl, $is_text) {
+        if ($is_text)
+            return "# Comments";
+        else
+            return '<span class="need-tooltip" data-tooltip="# completed comments / # assigned comments" data-tooltip-dir="b">#&nbsp;Comments</span>';
+    }
+    function content_empty(PaperList $pl, PaperInfo $row) {
+        return !$pl->contact->can_view_review_assignment($row, null, null);
+    }
+    function content(PaperList $pl, PaperInfo $row) {
+        return $row->num_comments();
+    }
+    function text(PaperList $pl, PaperInfo $row) {
+        return $row->num_comments();
+    }
+}
 class AuthorsPaperColumn extends PaperColumn {
     private $aufull;
     private $anonau;
