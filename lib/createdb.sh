@@ -24,6 +24,7 @@ help () {
     echo "      --no-dbuser         Do not create database user."
     echo "      --no-schema         Do not load initial schema."
     echo "      --no-setup-phase    Don't give special treatment to the first user."
+	echo "      --server=<NAME/IP>  Mysql server address (default: localhost)"
     echo
     echo "MYSQLOPTIONS are sent to mysql and mysqladmin."
     echo "Common options include '--user=ADMIN_USERNAME' and '--password=ADMIN_PASSWORD'"
@@ -54,6 +55,7 @@ DBNAME=""
 DBUSER=""
 DBPASS=""
 PASSWORD=""
+SERVERNAME="localhost"
 distoptions_file=distoptions.php
 options_file=
 minimal_options=
@@ -64,6 +66,7 @@ batch=false
 replace=false
 dbuser_existing=false
 no_schema=false
+echo_n="echo $ECHO_N"
 quiet=false
 qecho=echo
 qecho_n=echo_n
@@ -79,6 +82,8 @@ while [ $# -gt 0 ]; do
         MYCREATEDB_USER="`echo "$1" | sed s/^-u//`";;
     --u=*|--us=*|--use=*|--user=*)
         MYCREATEDB_USER="`echo "$1" | sed 's/^[^=]*=//'`";;
+    --server=|-s=)
+        SERVERNAME="`echo "$1" | sed s/^-s//`";;
     -p*)
         PASSWORD="`echo "$1" | sed s/^-p//`";;
     --pas=*|--pass=*|--passw=*|--passwo=*|--passwor=*|--password=*)
@@ -119,6 +124,9 @@ while [ $# -gt 0 ]; do
     shift $shift
 done
 
+
+SERVERIP="`ping -q -c 1 $SERVERNAME | grep PING | sed -e "s/^[^(]*[(]//" | sed -e "s/[)].*$//"`"
+#echo "Contacting server $SERVERNAME at $SERVERIP..."
 ### Test mysql binary
 check_mysqlish MYSQL mysql
 check_mysqlish MYSQLADMIN mysqladmin
@@ -356,22 +364,29 @@ if [ "$createdb" = y ]; then
     eval $MYSQLADMIN $mycreatedb_args $myargs $FLAGS --default-character-set=utf8 create $DBNAME || exit 1
 fi
 
+#SOURCENAME="$SERVERNAME" 
+SOURCENAME="%"
+if [! '$SERVERNAME' = 'localhost' ];
+then
+SOURCENAME="%"
+fi
+
 if [ "$createuser" = y ]; then
     $qecho "Creating $DBUSER user and password..."
     # 1. GRANT USAGE to ensure users exist (because DROP USER errors if they don't)
     # 2. DROP USER
     # 3. CREATE USER
     eval $MYSQL $mycreatedb_args $myargs $FLAGS mysql <<__EOF__ || exit 1
-GRANT USAGE ON *.* TO '$DBUSER'@'localhost' IDENTIFIED BY '`sql_dbpass`',
-    '$DBUSER'@'127.0.0.1' IDENTIFIED BY '`sql_dbpass`',
-    '$DBUSER'@'localhost.localdomain' IDENTIFIED BY '`sql_dbpass`';
+GRANT USAGE ON *.* TO '$DBUSER'@'$SOURCENAME' IDENTIFIED BY '`sql_dbpass`',
+    '$DBUSER'@'$SERVERIP' IDENTIFIED BY '`sql_dbpass`',
+    '$DBUSER'@'$SOURCENAME.localdomain' IDENTIFIED BY '`sql_dbpass`';
 
-DROP USER '$DBUSER'@'localhost', '$DBUSER'@'127.0.0.1', '$DBUSER'@'localhost.localdomain';
+DROP USER '$DBUSER'@'$SOURCENAME', '$DBUSER'@'$SERVERIP', '$DBUSER'@'$SOURCENAME.localdomain';
 FLUSH PRIVILEGES;
 
-CREATE USER '$DBUSER'@'localhost' IDENTIFIED BY '`sql_dbpass`',
-    '$DBUSER'@'127.0.0.1' IDENTIFIED BY '`sql_dbpass`',
-    '$DBUSER'@'localhost.localdomain' IDENTIFIED BY '`sql_dbpass`';
+CREATE USER '$DBUSER'@'$SOURCENAME' IDENTIFIED BY '`sql_dbpass`',
+    '$DBUSER'@'$SERVERIP' IDENTIFIED BY '`sql_dbpass`',
+    '$DBUSER'@'$SOURCENAME.localdomain' IDENTIFIED BY '`sql_dbpass`';
 
 __EOF__
 fi
@@ -384,14 +399,14 @@ DELETE FROM db WHERE db='$DBNAME' AND User='$DBUSER';
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX,
     REFERENCES, ALTER, LOCK TABLES, CREATE TEMPORARY TABLES
     ON \`$DBNAME\`.*
-    TO '$DBUSER'@'localhost', '$DBUSER'@'127.0.0.1', '$DBUSER'@'localhost.localdomain';
+    TO '$DBUSER'@'$SOURCENAME', '$DBUSER'@'$SERVERIP', '$DBUSER'@'$SOURCENAME.localdomain';
 
 __EOF__
 ##
 
     $qecho "Granting RELOAD privilege..."
     eval $MYSQL $mycreatedb_args $myargs $FLAGS mysql <<__EOF__ || echo "* Failed to grant RELOAD privilege!" 1>&2
-GRANT RELOAD ON *.* TO '$DBUSER'@'localhost', '$DBUSER'@'127.0.0.1', '$DBUSER'@'localhost.localdomain';
+GRANT RELOAD ON *.* TO '$DBUSER'@'$SOURCENAME', '$DBUSER'@'$SERVERIP', '$DBUSER'@'$SOURCENAME.localdomain';
 __EOF__
     $qecho
 
@@ -451,6 +466,12 @@ __EOF__
     test -z "$minimal_options" && awk 'BEGIN { p = 0 }
 /^\$Opt\[.passwordHmacKey/ { p = 1; next }
 { if (p) print }' < "${SRCDIR}${distoptions_file}"
+if [! '$SERVERNAME' = 'localhost' ];
+then
+cat <<__EOF__
+\$Opt["dbHost"] = "$SERVERNAME";
+__EOF__
+fi
 }
 
 is_group_member () {
