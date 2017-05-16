@@ -451,11 +451,16 @@ class Ht {
     static function xmsg($type, $content) {
         if (substr($type, 0, 1) === "x")
             $type = substr($type, 1);
-        if ($type === "error")
-            $type = "merror";
-        return '<div class="xmsg x' . $type . '"><div class="xmsg0"></div>'
-            . '<div class="xmsgc">' . $content . '</div>'
-            . '<div class="xmsg1"></div></div>';
+            
+        $alert_class = "alert-info";
+        if($type === "error"){
+          $alert_class = "alert-danger";
+        }else if($type === "warning" ){
+          $alert_class = "alert-warning";
+        }else if($type === "confirm"){
+          $alert_class = "alert-success";
+        }
+        return '<div class="alert '.$alert_class.'">'.$content.'</div>';
     }
 
     static function ymsg($type, $content) {

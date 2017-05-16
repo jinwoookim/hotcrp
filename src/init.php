@@ -3,6 +3,7 @@
 // HotCRP is Copyright (c) 2006-2017 Eddie Kohler and Regents of the UC
 // Distributed under an MIT-like license; see LICENSE
 
+
 define("HOTCRP_VERSION", "2.100");
 
 // All review types must be 1 digit
@@ -146,7 +147,7 @@ class SiteLoader {
     }
 }
 
-function __autoload($class_name) {
+function my_autoload($class_name) {
     global $ConfSitePATH;
     $f = null;
     if (isset(SiteLoader::$map[$class_name]))
@@ -157,12 +158,19 @@ function __autoload($class_name) {
         require_once($fx);
 }
 
+
+spl_autoload_register("my_autoload");
+
+
 require_once("$ConfSitePATH/lib/base.php");
 require_once("$ConfSitePATH/lib/redirect.php");
 require_once("$ConfSitePATH/lib/dbl.php");
 require_once("$ConfSitePATH/src/helpers.php");
 require_once("$ConfSitePATH/src/conference.php");
 require_once("$ConfSitePATH/src/contact.php");
+
+// require_once("vendor/autoload.php");
+// $loader->unregister();
 
 
 // Set locale to C (so that, e.g., strtolower() on UTF-8 data doesn't explode)

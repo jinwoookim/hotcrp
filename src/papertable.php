@@ -641,6 +641,7 @@ class PaperTable {
     }
 
     private function echo_editable_authors() {
+        global $Me;
         $max_authors = (int) $this->conf->opt("maxAuthors");
         $min_authors = $max_authors > 0 ? min(5, $max_authors) : 5;
 
@@ -657,6 +658,7 @@ class PaperTable {
             'data-row-template="', htmlspecialchars($this->editable_authors_tr('$', "", "", "", $max_authors)), '">';
 
         $blankAu = array("", "", "", "");
+
         if ($this->useRequest) {
             for ($n = 1; $this->qreq["auname$n"] || $this->qreq["auemail$n"] || $this->qreq["auaff$n"]; ++$n)
                 echo $this->editable_authors_tr($n, (string) $this->qreq["auname$n"], (string) $this->qreq["auemail$n"], (string) $this->qreq["auaff$n"], $max_authors);
@@ -671,11 +673,16 @@ class PaperTable {
                 echo $this->editable_authors_tr($n, $auname, $au->email, $au->affiliation, $max_authors);
             }
         }
-        if ($max_authors <= 0 || $n <= $max_authors)
+        if($n == 1){
+          echo $this->editable_authors_tr($n, $Me->lastName.", ".$Me->firstName, $Me->email, $Me->affiliation, $max_authors);
+          ++$n;
+        }
+        if ($max_authors <= 0 || $n <= $max_authors){
             do {
                 echo $this->editable_authors_tr($n, "", "", "", $max_authors);
                 ++$n;
             } while ($n <= $min_authors);
+          }
         echo "</tbody></table></div></div>\n\n";
     }
 

@@ -3,6 +3,7 @@
 // HotCRP is Copyright (c) 2006-2017 Eddie Kohler and Regents of the UC
 // Distributed under an MIT-like license; see LICENSE
 
+
 class Track {
     private $a;
     const VIEW = 0;
@@ -2633,10 +2634,24 @@ class Conf {
         } else if ($conf && $conf->save_messages) {
             ensure_session();
             $_SESSION[$conf->dsn]["msgs"][] = [$type, $text];
-        } else if ($type[0] == "x")
+        } else if ($type[0] == "x"){
             echo Ht::xmsg($type, $text);
-        else
-            echo "<div class=\"$type\">$text</div>";
+        }else{
+          $alert_class = "alert-".$type;
+          $icon = "";
+          if($type==="confirm"){
+            $alert_class = "alert-success";
+            $icon = "<i class=\"fa fa-check\"></i>";
+          }
+          if($type === "warning"){
+            $icon = "<i class=\"fa fa-exclamation\"></i>";
+          }
+          if($type === "merror"){
+            $alert_class = "alert-danger";
+            $icon = "<i class=\"fa fa-times\"></i>";
+          }
+          echo "<div class=\"alert $alert_class\">$icon $text</div>";
+        }
     }
 
     function msg($type, $text) {
@@ -2742,7 +2757,7 @@ class Conf {
 
         echo $this->make_css_link("stylesheets/style.css"), "\n";
         if ($this->opt("mobileStylesheet")) {
-            echo '<meta name="viewport" content="width=device-width, initial-scale=1">', "\n";
+            echo '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">', "\n";
             echo $this->make_css_link("stylesheets/mobile.css", "screen and (max-width: 768px)"), "\n";
         }
         foreach (mkarray($this->opt("stylesheets", [])) as $css)
@@ -2776,7 +2791,8 @@ class Conf {
         }
         if ($title)
             echo $title, " - ";
-        echo htmlspecialchars($this->short_name), "</title>\n</head>\n";
+        echo htmlspecialchars($this->short_name), "</title>\n<link href=\"https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css\" rel=\"stylesheet\" type=\"text/css\">\n<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css\" integrity=\"sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ\" crossorigin=\"anonymous\">\n
+        </head>\n";
 
         // jQuery
         $stash = Ht::unstash();
@@ -2902,7 +2918,7 @@ class Conf {
         if ($trackerowner)
             Ht::stash_script("hotcrp_deadlines.tracker(0)");
 
-        echo '<div id="prebody"><div id="header">';
+        echo '<div id="prebody"><div class="container" id="header"><div class="row"><div class="col-md-12">';
 
         // $header_site
         $is_home = $id === "home";
@@ -2966,9 +2982,9 @@ class Conf {
         }
         call_user_func($renderf, $this, $is_home, $site_div, $title_div, $profile_html, $actionBar, $my_deadlines);
 
-        echo "  <hr class=\"c\" /></div>\n";
+        echo "  <hr class=\"c\" /></div></div>\n";
 
-        echo "<div id=\"initialmsgs\">\n";
+        echo "<div class=\"row\"><div class=\"col-md-12\">\n";
         if (($x = $this->opt("maintenance")))
             echo "<div class=\"merror\"><strong>The site is down for maintenance.</strong> ", (is_string($x) ? $x : "Please check back later."), "</div>";
         $this->save_messages = false;
@@ -2980,7 +2996,7 @@ class Conf {
         echo "</div>\n";
 
         $this->headerPrinted = true;
-        echo "</div>\n<div id=\"body\" class=\"body\">\n";
+        echo "</div></div></div>\n<div id=\"body\" class=\"body\"><div class=\"container\">\n";
 
         // If browser owns tracker, send it the script immediately
         if ($trackerowner)
@@ -3033,7 +3049,13 @@ class Conf {
                 echo "<!-- Version ", HOTCRP_VERSION, " -->";
         }
         echo "</div>\n  <hr class=\"c\" /></div>\n";
-        echo Ht::unstash(), "</body>\n</html>\n";
+        echo Ht::unstash(), "
+
+        <!-- jQuery first, then Tether, then Bootstrap JS. -->
+        <script src=\"https://code.jquery.com/jquery-3.1.1.slim.min.js\" integrity=\"sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n\" crossorigin=\"anonymous\"></script>
+        <script src=\"https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js\" integrity=\"sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb\" crossorigin=\"anonymous\"></script>
+        <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js\" integrity=\"sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn\" crossorigin=\"anonymous\"></script>
+        </body>\n</html>\n";
     }
 
     public function stash_hotcrp_pc(Contact $user) {

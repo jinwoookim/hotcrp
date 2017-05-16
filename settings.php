@@ -295,7 +295,7 @@ class SettingValues extends MessageSet {
         $msgs = array();
         foreach ($this->messages(true) as $mx)
             $msgs[] = ($mx[2] == MessageSet::WARNING ? "Warning: " : "") . $mx[1];
-        $mt = '<div class="multimessage"><div class="mmm">' . join('</div><div class="mmm">', $msgs) . '</div></div>';
+        $mt = '<ul><li>' . join('</li><li>', $msgs) . '</liv></ul>';
         if (!empty($msgs) && $this->has_error())
             Conf::msg_error($mt, true);
         else if (!empty($msgs))
@@ -473,7 +473,7 @@ class SettingValues extends MessageSet {
             $status = max($status, $mx[2]);
         }
         if (!empty($msgs)) {
-            $mt = '<div class="multimessage"><div class="mmm">' . join('</div><div class="mmm">', $msgs) . '</div></div>';
+            $mt = '<ul><li>' . join('</li><li>', $msgs) . '</li></ul>';
             $xtype = ["xinfo", "xwarning", "xmerror"];
             $this->conf->msg($xtype[$status], $mt);
         }

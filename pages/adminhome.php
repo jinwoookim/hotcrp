@@ -70,8 +70,9 @@ function admin_home_messages() {
             }
     }
 
-    if (count($m))
-        $Conf->warnMsg('<div class="multimessage"><div class="mmm">' . join('</div><div class="mmm">', $m) . "</div></div>");
+    if (count($m)){
+         $Conf->warnMsg('<ul><li>'. join('</li><li>', $m) . "</li></ul>");
+    }
 }
 
 assert($Me->privChair);

@@ -1,10 +1,12 @@
 ###############################################################################
 #                          Generated on phpdocker.io                          #
 ###############################################################################
-
+#
 hotcrp-mysql:
   image: mysql:5.7
   container_name: hotcrp-mysql
+  volumes:
+        - ..:/var/www/hotcrp
   environment:
     - MYSQL_ROOT_PASSWORD=user
     - MYSQL_DATABASE=hotcrp

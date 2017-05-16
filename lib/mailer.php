@@ -542,6 +542,7 @@ class Mailer {
                 $to = "";
             unset($headers["subject"]);
             $htext = substr(join("", $headers), 0, -2);
+            error_log("Mail " . $prep->body . "");
             return mail($to, $prep->subject, $prep->body, $htext, $extra);
 
         } else if (!$Conf->opt("sendEmail")
