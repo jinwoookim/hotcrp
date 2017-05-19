@@ -540,6 +540,8 @@ class PaperList {
             return "id title revstat statusfull authors collab abstract topics reviewers shepherd scores formulas";
         case "authorHome":
             return "id title statusfull";
+        case "authorDiscussion":
+            return "id title authors commentstat";
         case "s":
         case "acc":
             return "sel id title revtype revstat commentstat status authors collab abstract topics pcconf allpref reviewers tags tagreports lead shepherd scores formulas";

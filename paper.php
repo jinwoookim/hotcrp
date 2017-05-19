@@ -59,7 +59,6 @@ function errorMsgExit($msg) {
 $newPaper = (defval($_REQUEST, "p") == "new"
              || defval($_REQUEST, "paperId") == "new");
 
-
 // general error messages
 if (isset($_GET["post"]) && $_GET["post"] && !count($_POST))
     $Conf->post_missing_msg();
@@ -75,6 +74,7 @@ function loadRows() {
 $prow = null;
 if (!$newPaper)
     loadRows();
+
 
 
 // paper actions

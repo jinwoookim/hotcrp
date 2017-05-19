@@ -475,6 +475,8 @@ if ($Me->is_reviewer() && ($Me->privChair || $papersub)) {
     ++$nhome_hr;
 }
 
+$disscusion_phase = true;
+
 // Authored papers
 if ($Me->is_author() || $Conf->timeStartPaper() > 0 || $Me->privChair
     || !$Me->is_reviewer()) {
@@ -497,8 +499,13 @@ if ($Me->is_author() || $Conf->timeStartPaper() > 0 || $Me->privChair
 
     $plist = null;
     if ($Me->is_author()) {
+        $table = "authorHome";
+
+        if(disscusion_phase){
+          $table =  "authorDiscussion";
+        }
         $plist = new PaperList(new PaperSearch($Me, ["t" => "a"]));
-        $ptext = $plist->table_html("authorHome", ["noheader" => true, "list" => true]);
+        $ptext = $plist->table_html($table, ["noheader" => false, "list" => true]);
         if ($plist->count > 0)
             echo "<div class='g'></div>\n", $ptext;
     }

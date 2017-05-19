@@ -2146,12 +2146,16 @@ class PaperSearch {
         $this->amPC = $user->isPC;
         $this->cid = $user->contactId;
 
+        $openreview = true;
+
         // paper selection
         $ptype = get_s($options, "t");
         if ($ptype === 0)
             $ptype = "";
         if ($this->privChair && !$ptype && $this->conf->timeUpdatePaper())
             $this->limitName = "all";
+        else if($openreview)
+            $this->limitName = "s";
         else if (($user->privChair && $ptype === "act")
                  || ($user->isPC
                      && (!$ptype || $ptype === "act" || $ptype === "all")

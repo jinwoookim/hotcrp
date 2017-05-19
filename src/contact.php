@@ -24,6 +24,8 @@ class Contact {
     private $cid;               // for forward compatibility
     public $conf;
 
+    public $openreview = true;
+
     public $firstName = "";
     public $lastName = "";
     public $unaccentedName = "";
@@ -1829,7 +1831,7 @@ class Contact {
 
     public function act_author_view(PaperInfo $prow) {
         $rights = $this->rights($prow);
-        return $rights->act_author_view;
+        return $rights->act_author_view || $this->openreview;
     }
 
     public function actAuthorSql($table, $only_if_complex = false) {
@@ -2272,7 +2274,8 @@ class Contact {
                 && $rrowSubmitted
                 && $viewscore >= VIEWSCORE_PC
                 && ($prow->review_not_incomplete($this)
-                    && ($this->conf->setting("extrev_view") >= 1 || $pc_trackok)));
+                    && ($this->conf->setting("extrev_view") >= 1 || $pc_trackok)))
+                  || $this->openreview;
     }
 
     function perm_view_review(PaperInfo $prow, $rrow, $forceShow, $viewscore = null) {
