@@ -80,7 +80,6 @@ class Contact {
     private $capabilities = null;
     private $review_tokens_ = null;
     private $activated_ = false;
-    private $openreview = true;
 
     // Per-paper DB information, usually null
     public $myReviewType = null;
