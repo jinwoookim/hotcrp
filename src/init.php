@@ -65,6 +65,7 @@ define("COMMENTTYPE_ADMINONLY", 0x00000);
 define("COMMENTTYPE_PCONLY", 0x10000);
 define("COMMENTTYPE_REVIEWER", 0x20000);
 define("COMMENTTYPE_AUTHOR", 0x30000);
+define("COMMENTTYPE_ALL", 0x40000);
 define("COMMENTTYPE_VISIBILITY", 0xFFF0000);
 
 define("TAG_REGEX_NOTWIDDLE", '[a-zA-Z@*_:.][-a-zA-Z0-9!@*_:.\/]*');
@@ -155,7 +156,8 @@ function my_autoload($class_name) {
     if (!$f)
         $f = strtolower($class_name) . ".php";
     foreach (expand_includes($f, ["autoload" => true]) as $fx)
-        require_once($fx);
+          require_once($fx);
+
 }
 
 

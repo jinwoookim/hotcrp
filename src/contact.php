@@ -80,6 +80,7 @@ class Contact {
     private $capabilities = null;
     private $review_tokens_ = null;
     private $activated_ = false;
+    private $openreview = true;
 
     // Per-paper DB information, usually null
     public $myReviewType = null;
@@ -87,6 +88,7 @@ class Contact {
     public $myReviewNeedsSubmit = null;
     public $conflictType = null;
     public $watch = null;
+
 
     static private $status_info_cache = array();
     static private $contactdb_dblink = false;
@@ -102,6 +104,10 @@ class Contact {
             $this->db_load();
         else if ($this->conf->opt("disableNonPC"))
             $this->disabled = true;
+
+        if($this->openreview){
+            $this->openreview = $conf->setting("rev_open", -1);
+        }
     }
 
     public static function fetch($result, Conf $conf = null) {
@@ -2009,6 +2015,7 @@ class Contact {
             return true;
         $rights = $this->rights($prow, "any");
         return $rights->allow_author_view
+           ||( $this->openreview &&  $prow->timeSubmitted != 0)
             || ($rights->review_type
                 // assigned reviewer can view PDF of withdrawn, but submitted, paper
                 && (!$pdf || $prow->timeSubmitted != 0))
@@ -2210,7 +2217,8 @@ class Contact {
 
     public function can_view_review_assignment(PaperInfo $prow, $rrow, $forceShow) {
         $rights = $this->rights($prow, $forceShow);
-        return $rights->allow_administer
+        return $this->openreview ||
+            $rights->allow_administer
             || $rights->allow_pc
             || $rights->review_type
             || $this->can_view_review($prow, $rrow, $forceShow);
@@ -2576,7 +2584,7 @@ class Contact {
         if ($crow && ($crow->commentType & COMMENTTYPE_RESPONSE))
             return $this->can_respond($prow, $crow, $submit);
         $rights = $this->rights($prow);
-        return $rights->allow_review
+        return $this->openreview || $rights->allow_review
             && ($prow->timeSubmitted > 0
                 || $rights->review_type > 0
                 || ($rights->allow_administer && $rights->rights_force))
@@ -2667,7 +2675,8 @@ class Contact {
     function can_view_comment(PaperInfo $prow, $crow, $forceShow) {
         $ctype = $crow ? $crow->commentType : COMMENTTYPE_AUTHOR;
         $rights = $this->rights($prow, $forceShow);
-        return ($crow && $crow->contactId == $this->contactId) // wrote this comment
+        $openreview = true;
+        return $openreview || ($crow && $crow->contactId == $this->contactId) // wrote this comment
             || ($crow && $crow->contactId == $rights->review_token_cid)
             || $rights->can_administer
             || ($rights->act_author_view
@@ -2715,7 +2724,7 @@ class Contact {
         if ($crow && ($crow->commentType & COMMENTTYPE_RESPONSE))
             return $this->can_view_authors($prow, $forceShow);
         $rights = $this->rights($prow, $forceShow);
-        return $rights->can_administer
+        return $this->openreview || $rights->can_administer
             || ($crow && $crow->contactId == $this->contactId)
             || $rights->allow_pc
             || ($rights->allow_review
@@ -2729,7 +2738,7 @@ class Contact {
 
     function can_view_comment_tags(PaperInfo $prow, $crow, $forceShow = null) {
         $rights = $this->rights($prow, $forceShow);
-        return $rights->allow_pc || $rights->review_type > 0;
+        return $this->openreview || $rights->allow_pc || $rights->review_type > 0 ;
     }
 
     function can_view_some_draft_response() {

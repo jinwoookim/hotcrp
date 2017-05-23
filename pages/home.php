@@ -475,7 +475,19 @@ if ($Me->is_reviewer() && ($Me->privChair || $papersub)) {
     ++$nhome_hr;
 }
 
-$disscusion_phase = true;
+
+if($Opt["openreview"] && $Conf->settings['rev_open']){
+
+    echo '<h4>Submissions</h4>';
+
+    $plist = null;
+    $plist = new PaperList(new PaperSearch($Me, ["t" => "s"]));
+    $ptext = $plist->table_html("openreviewHome", ["list" => true]);
+    if ($plist->count > 0)
+        echo "<div class='g'></div>\n", $ptext;
+
+
+}
 
 // Authored papers
 if ($Me->is_author() || $Conf->timeStartPaper() > 0 || $Me->privChair
@@ -499,13 +511,8 @@ if ($Me->is_author() || $Conf->timeStartPaper() > 0 || $Me->privChair
 
     $plist = null;
     if ($Me->is_author()) {
-        $table = "authorHome";
-
-        if(disscusion_phase){
-          $table =  "authorDiscussion";
-        }
         $plist = new PaperList(new PaperSearch($Me, ["t" => "a"]));
-        $ptext = $plist->table_html($table, ["noheader" => false, "list" => true]);
+        $ptext = $plist->table_html("authorHome", ["noheader" => true, "list" => true]);
         if ($plist->count > 0)
             echo "<div class='g'></div>\n", $ptext;
     }

@@ -2154,8 +2154,9 @@ class PaperSearch {
             $ptype = "";
         if ($this->privChair && !$ptype && $this->conf->timeUpdatePaper())
             $this->limitName = "all";
-        else if($openreview)
+        else if ($openreview && (!$ptype || $ptype === "s" || $ptype === "unm")){
             $this->limitName = "s";
+        }
         else if (($user->privChair && $ptype === "act")
                  || ($user->isPC
                      && (!$ptype || $ptype === "act" || $ptype === "all")

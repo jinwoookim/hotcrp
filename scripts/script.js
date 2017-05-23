@@ -2770,8 +2770,8 @@ function comment_identity_time(cj) {
         }
         t.push('<div class="cmttags">' + x.join(" ") + '</div>');
     }
-    if (!cj.response && (i = vismap[cj.visibility]))
-        t.push('<div class="cmtvis">(' + i + ')</div>');
+ //   if (!cj.response && (i = vismap[cj.visibility]))
+ //       t.push('<div class="cmtvis">(' + i + ')</div>');
     return t.join("");
 }
 
@@ -2962,7 +2962,7 @@ function save_editor(elt, action, really) {
         if (!data.cmt && !$c.c.is_new)
             delete cmts[cid];
         if (!data.cmt && editing_response)
-            data.cmt = {is_new: true, response: $c.c.response, editable: true, draft: true, cid: cid};
+            data.cmt = {is_new: true, response: $c.c.response, editable: true, draft: true, cid: cid, is_author: false};
         if (data.cmt) {
             var data_cid = cj_cid(data.cmt);
             if (cid !== data_cid) {
@@ -3108,16 +3108,19 @@ function add(cj, editing) {
                     '"><div class="cmtcard_head"><h3>' +
                     (cj.response == "1" ? "Response" : cj.response + " Response") +
                     '</h3></div>';
-            else
+            else {
                 t = '<div class="cmtcard">';
+            }
             $c = $(t + '<div class="cmtcard_body"></div></div>').appendTo("#body");
             if (!cj.response && $pc && $pc.length)
                 $c.prepend('<div class="cmtcard_link"><a href="#' + ($pc.find("[id]").last().attr("id")) + '" class="qq">Earlier comments &#x25B2;</a></div>');
         }
         if (cj.response)
             j = $('<div class="cmtg"></div>');
-        else
-            j = $('<div id="' + cid + '" class="cmtg cmtid"></div>');
+        else {
+            var author_class = cj.is_author ? "adsf" : "boo";
+            j = $('<div id="' + cid + '" class="cmtg cmtid '+author_class+'"></div>');
+        }
         j.appendTo($c.find(".cmtcard_body"));
     }
     if (editing == null && cj.response && cj.draft && cj.editable)
@@ -3151,10 +3154,10 @@ return {
     set_resp_round: function (rname, rinfo) { resp_rounds[rname] = rinfo; },
     edit: edit,
     edit_new: function () {
-        return edit({is_new: true, editable: true});
+        return edit({is_new: true, editable: true, is_author: false});
     },
     edit_response: function (respround) {
-        return edit({is_new: true, response: respround, editable: true});
+        return edit({is_new: true, response: respround, editable: true, is_author: false});
     }
 };
 })(jQuery);

@@ -21,9 +21,10 @@ class CommentInfo {
     public $commentRound;
     public $commentFormat;
     public $commentOverflow;
+    public $editable_enable = false;
 
     static private $watching;
-    static private $visibility_map = array(COMMENTTYPE_ADMINONLY => "admin", COMMENTTYPE_PCONLY => "pc", COMMENTTYPE_REVIEWER => "rev", COMMENTTYPE_AUTHOR => "au");
+    static private $visibility_map = array(COMMENTTYPE_ADMINONLY => "admin", COMMENTTYPE_PCONLY => "pc", COMMENTTYPE_REVIEWER => "rev", COMMENTTYPE_AUTHOR => "au", COMMENTTYPE_ALL => "all");
 
 
     function __construct($x, PaperInfo $prow = null, Conf $conf = null) {
@@ -205,6 +206,9 @@ class CommentInfo {
     }
 
     function unparse_json($contact, $include_displayed_at = false) {
+
+        //$is_paper_author = $this->prow.
+
         if ($this->commentId && !$contact->can_view_comment($this->prow, $this, null))
             return false;
 
@@ -212,14 +216,14 @@ class CommentInfo {
         if (!$this->commentId) {
             if (!$contact->can_comment($this->prow, $this))
                 return false;
-            $cj = (object) array("pid" => $this->prow->paperId, "is_new" => true, "editable" => true);
+            $cj = (object) array("pid" => $this->prow->paperId, "is_new" => true, "editable" => $this->editable_enable, "is_author" => true);
             if ($this->commentType & COMMENTTYPE_RESPONSE)
                 $cj->response = $this->conf->resp_round_name($this->commentRound);
             return $cj;
         }
 
         // otherwise, viewable comment
-        $cj = (object) array("pid" => $this->prow->paperId, "cid" => $this->commentId);
+        $cj = (object) array("pid" => $this->prow->paperId, "cid" => $this->commentId, "is_author" => false);
         $cj->ordinal = $this->unparse_ordinal();
         $cj->visibility = self::$visibility_map[$this->commentType & COMMENTTYPE_VISIBILITY];
         if ($this->commentType & COMMENTTYPE_BLIND)
@@ -229,7 +233,7 @@ class CommentInfo {
         if ($this->commentType & COMMENTTYPE_RESPONSE)
             $cj->response = $this->conf->resp_round_name($this->commentRound);
         if ($contact->can_comment($this->prow, $this))
-            $cj->editable = true;
+            $cj->editable = $this->editable_enable;
 
         // tags
         if (($tags = $this->viewable_tags($contact))) {
@@ -245,6 +249,7 @@ class CommentInfo {
             $user = $this->user();
             $cj->author = Text::user_html($user);
             $cj->author_email = $user->email;
+            $cj->is_author = $idable;
             if (!$idable)
                 $cj->author_hidden = true;
         }
@@ -355,6 +360,8 @@ set $okey=(t.maxOrdinal+1) where commentId=$cmtid";
             $ctype = COMMENTTYPE_PCONLY;
         else if ($req_visibility == "admin")
             $ctype = COMMENTTYPE_ADMINONLY;
+        else if ($req_visibility == "all")
+            $ctype = COMMENTTYPE_ALL;
         else if ($this->commentId && $req_visibility === null)
             $ctype = $this->commentType;
         else // $req->visibility == "r" || $req->visibility == "rev"

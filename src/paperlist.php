@@ -534,10 +534,12 @@ class PaperList {
     }
 
     private function _list_columns($listname) {
-      echo "<h1>$listname</h1>";
+      //echo "<h1>$listname</h1>";
         switch ($listname) {
         case "a":
             return "id title revstat statusfull authors collab abstract topics reviewers shepherd scores formulas";
+        case "openreviewHome":
+            return "sel id title commentstat";
         case "authorHome":
             return "id title statusfull";
         case "authorDiscussion":
