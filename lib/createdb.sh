@@ -24,7 +24,9 @@ help () {
     echo "      --no-dbuser         Do not create database user."
     echo "      --no-schema         Do not load initial schema."
     echo "      --no-setup-phase    Don't give special treatment to the first user."
-	echo "      --server=<NAME/IP>  Mysql server address (default: localhost)"
+    echo "      --server=<NAME/IP>  Mysql server address (default: localhost)"
+    echo "      --remote            Connect to Mysql server specified under --server remotely"
+    echo "      --simulate          Only simulate mysql access, dumps commands into file"
     echo
     echo "MYSQLOPTIONS are sent to mysql and mysqladmin."
     echo "Common options include '--user=ADMIN_USERNAME' and '--password=ADMIN_PASSWORD'"
@@ -64,6 +66,8 @@ needpassword=false
 force=false
 batch=false
 replace=false
+remote=false
+simulate=false
 dbuser_existing=false
 no_schema=false
 echo_n="echo $ECHO_N"
@@ -104,6 +108,10 @@ while [ $# -gt 0 ]; do
         minimal_options=y;;
     --replace)
         replace=true;;
+    --remote)
+        remote=true;;
+    --simulate)
+        simulate=true;;
     -q|--quie|--quiet)
         quiet=true; qecho=true; qecho_n=true;;
     -c|--co|--con|--conf|--confi|--config|-c*|--co=*|--con=*|--conf=*|--confi=*|--config=*)
@@ -126,10 +134,24 @@ done
 
 
 SERVERIP="`ping -q -c 1 $SERVERNAME | grep PING | sed -e "s/^[^(]*[(]//" | sed -e "s/[)].*$//"`"
-#echo "Contacting server $SERVERNAME at $SERVERIP..."
+CONNSERVER=localhost
+if $remote; then
+    echo "Contacting server $SERVERNAME at $SERVERIP..."
+    CONNSERVER=$SERVERNAME
+fi
 ### Test mysql binary
-check_mysqlish MYSQL mysql
-check_mysqlish MYSQLADMIN mysqladmin
+SIMULATEOUTPFILE1=mysql_inp.txt
+SIMULATEOUTPFILE2=mysqladmin_inp.txt
+if $simulate; then
+    echo "-- mysql inputs" > $SIMULATEOUTPFILE1
+    echo "-- mysqladmin inputs" > $SIMULATEOUTPFILE2
+    MYSQL="cat >> $SIMULATEOUTPFILE1 | echo mysql "
+    MYSQLADMIN="cat >> $SIMULATEOUTPFILE2 | echo mysqladmin "
+else
+    check_mysqlish MYSQL mysql
+    check_mysqlish MYSQLADMIN mysqladmin
+fi
+
 
 ### Print hotcrp.com message
 if ! $quiet && ! $batch && ! [ -n "$options_file" -a -f "$options_file" ]; then
@@ -160,7 +182,10 @@ if $needpassword; then
     stty echo; trap - INT
     echo
 fi
-set_myargs "$MYCREATEDB_USER" "$PASSWORD"
+
+if ! $remote; then
+    set_myargs "$MYCREATEDB_USER" "$PASSWORD" "$SERVERNAME"
+fi 
 
 # check that we can run mysql
 if ! (echo 'show databases;' | eval $MYSQL $mycreatedb_args $myargs $FLAGS >/dev/null); then
@@ -170,7 +195,7 @@ if ! (echo 'show databases;' | eval $MYSQL $mycreatedb_args $myargs $FLAGS >/dev
     exit 1
 fi
 grants=`echo 'show grants;' | eval $MYSQL $mycreatedb_args $myargs $FLAGS | grep -i -e create -e all | grep -i 'on \*\.\*'`
-if ! $force && test -z "$grants"; then
+if ! $simulate && ! $force && test -z "$grants"; then
     echo 1>&2
     echo "* This account doesn't appear to have the privilege to create MySQL databases." 1>&2
     echo "* Try \`sudo $PROG\` and/or supply \`--user\` and \`--password\` options." 1>&2
@@ -329,6 +354,14 @@ echo 'select User from user group by User;' | eval $MYSQL $mycreatedb_args $myar
 userexists="$?"
 
 createdb=y; createuser=y
+if $simulate; then 
+    createdb=n; 
+    createuser=n
+    dbuser_existing=true
+    dbexists=true
+    userexists=true
+fi
+
 if $dbuser_existing && [ "$userexists" != 0 ]; then
     echo "* The requested database user $DBUSER does not exist." 1>&2
     exit 1
@@ -368,6 +401,15 @@ SOURCENAME="$SERVERNAME"
 if [ '$SERVERNAME' != 'localhost' ];
 then
 SOURCENAME="%"
+fi
+
+if ["$MYCREATEDB_USER" = "$DBUSER"]; then
+    echo "Warning: You are using the same user for creating and later accessing the database. This is considered to be bad practise (permissions wise). "
+    createuser=n
+fi
+
+if $remote; then
+    createdb=n; createuser=n
 fi
 
 if [ "$createuser" = y ]; then
@@ -435,7 +477,7 @@ if ! $replace && ! $no_schema && test "$createdb" = n; then
 fi
 if ! $no_schema; then
     $qecho "Populating database..."
-    set_myargs "$DBUSER" "`echo_dbpass`"
+    set_myargs "$DBUSER" "`echo_dbpass`" "$SERVERNAME"
     $qecho "+ $setup_phase ${SRCDIR}schema.sql | $MYSQL$myargs_redacted$FLAGS $DBNAME"
     eval $setup_phase ${SRCDIR}schema.sql | eval $MYSQL $myargs $FLAGS $DBNAME || exit 1
 fi

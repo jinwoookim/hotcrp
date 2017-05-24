@@ -159,6 +159,7 @@ set_myargs () {
     else
         myargs_redacted="$myargs"
     fi
+    if test -n "$3"; then myargs="$myargs -h$3"; fi
 }
 
 generate_random_ints () {
