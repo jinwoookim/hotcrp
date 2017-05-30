@@ -1709,7 +1709,9 @@ class Conf {
             $t += $g;
         return $t === null || $t <= 0 || $t >= $Now;
     }
-
+    function showAllPapers() {
+        return ($this->setting("rev_open")>0) && ($this->setting("rev_showallusers")>0);
+    }
     function timeStartPaper() {
         return $this->deadlinesBetween("sub_open", "sub_reg", "sub_grace");
     }

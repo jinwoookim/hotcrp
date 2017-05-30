@@ -60,6 +60,7 @@ class SettingRenderer_Reviews extends SettingRenderer {
 
 function render(SettingValues $sv) {
     $sv->echo_checkbox("rev_open", "<b>Open site for reviewing</b>");
+    $sv->echo_checkbox("rev_showallusers", "Show all submissions to all participants (site must be open for reviews)");
     $sv->echo_checkbox("cmt_always", "Allow comments even if reviewing is closed");
 
     echo "<div class='g'></div>\n";

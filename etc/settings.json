@@ -231,6 +231,10 @@
         "type": "cdate",
         "require": "src/settings/s_reviews.php"
     },
+    "rev_showallusers": {
+        "name": "Show all submissions to all participants ",
+        "type": "checkbox"
+    },
     "rev_ratings": {
         "name": "Collect ratings of reviews",
         "type": "radio", "values": [0, 1, 2], "default_value": 0

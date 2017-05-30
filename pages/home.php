@@ -476,7 +476,7 @@ if ($Me->is_reviewer() && ($Me->privChair || $papersub)) {
 }
 
 
-if($Opt["openreview"] && $Conf->settings['rev_open']){
+if($Conf->showAllPapers()){
 
     echo '<h4>Submissions</h4>';
 
@@ -495,6 +495,8 @@ if ($Me->is_author() || $Conf->timeStartPaper() > 0 || $Me->privChair
     echo ($nhome_hr ? $home_hr : ""), '<div class="homegrp" id="homeau">';
 
     // Overview
+    //if($Conf->showAllPapers())
+    //    echo "<strong><a href='", hoturl("search", "q="), "'>Show all submission</a></strong> <br />";
     if ($Me->is_author())
         echo "<h4>Your Submissions: &nbsp;</h4> ";
     else
