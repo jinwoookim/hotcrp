@@ -222,6 +222,10 @@
         "name": "Notify PC chairs of new reviews by email",
         "type": "checkbox"
     },
+    "rev_fullyvis": {
+        "name": "Comments are always visible to all participants",
+        "type": "checkbox"
+    },
     "rev_open": {
         "name": "Open site for reviewing",
         "type": "cdate",
