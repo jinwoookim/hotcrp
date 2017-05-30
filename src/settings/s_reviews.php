@@ -71,6 +71,7 @@ function render(SettingValues $sv) {
 
     echo "<div class='g'></div>\n";
     $sv->echo_checkbox('rev_notifychair', 'Notify PC chairs of newly submitted reviews by email');
+    $sv->echo_checkbox('rev_finalcomments','Users cannot change their posted comments.');
     $sv->echo_checkbox('rev_fullyvis', 'Comments are always visible to all participants');
 
 

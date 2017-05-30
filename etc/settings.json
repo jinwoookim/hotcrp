@@ -222,6 +222,10 @@
         "name": "Notify PC chairs of new reviews by email",
         "type": "checkbox"
     },
+    "rev_finalcomments": {
+        "name": "Users cannot change their posted comments.",
+        "type": "checkbox"
+    },
     "rev_fullyvis": {
         "name": "Comments are always visible to all participants",
         "type": "checkbox"

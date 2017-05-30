@@ -1710,7 +1710,10 @@ class Conf {
         return $t === null || $t <= 0 || $t >= $Now;
     }
     function showAllPapers() {
-        return ($this->setting("rev_open")>0) && ($this->setting("rev_showallusers")>0);
+        global $Me;
+        return ($this->setting("rev_open")>0) 
+        && ($this->setting("rev_showallusers")>0) 
+        && ($Me->is_author() || $Me->privChair || $Me->isPC);
     }
     function timeStartPaper() {
         return $this->deadlinesBetween("sub_open", "sub_reg", "sub_grace");
