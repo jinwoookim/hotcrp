@@ -105,7 +105,7 @@ class Contact {
             $this->disabled = true;
 
         if($this->openreview){
-            $this->openreview = $conf->setting("rev_open", -1);
+            $this->openreview = $this->conf->setting("rev_open", -1);
         }
     }
 
