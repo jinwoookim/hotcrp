@@ -3631,6 +3631,8 @@ class PaperSearch {
             if ($user->conf->timePCViewDecision(false) && $user->conf->has_any_accepts())
                 $tOpt["acc"] = "Accepted papers";
         }
+        if($user->conf->showAllPapers())
+            $tOpt["s"] = "Submitted papers";
         if ($user->privChair) {
             $tOpt["all"] = "All papers";
             if (!$user->conf->can_pc_see_all_submissions() && $reqtype === "act")

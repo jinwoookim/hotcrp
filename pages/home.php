@@ -478,7 +478,7 @@ if ($Me->is_reviewer() && ($Me->privChair || $papersub)) {
 
 if($Conf->showAllPapers()){
 
-    echo '<h4>Submissions</h4>';
+    echo '<h4>Comment Submissions:</h4>';
 
     $plist = null;
     $plist = new PaperList(new PaperSearch($Me, ["t" => "s"]));
@@ -495,8 +495,8 @@ if ($Me->is_author() || $Conf->timeStartPaper() > 0 || $Me->privChair
     echo ($nhome_hr ? $home_hr : ""), '<div class="homegrp" id="homeau">';
 
     // Overview
-    //if($Conf->showAllPapers())
-    //    echo "<strong><a href='", hoturl("search", "q="), "'>Show all submission</a></strong> <br />";
+    if($Conf->showAllPapers())
+        echo "<h4><a href='", hoturl("search", "t=s&q="), "'>View all submission</a>&nbsp;</h4> <br />";
     if ($Me->is_author())
         echo "<h4>Your Submissions: &nbsp;</h4> ";
     else
