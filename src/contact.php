@@ -1506,6 +1506,10 @@ class Contact {
         return $this->is_author_;
     }
 
+    function is_participant() {
+        return ($this->is_author() && ($this->conf->setting("rev_open")>0)) || $this->privChair || $this->isPC;
+    }
+    
     function has_review() {
         $this->check_rights_version();
         if (!isset($this->has_review_))
@@ -2112,7 +2116,8 @@ class Contact {
                 && $this->conf->can_pc_see_all_submissions())
             || ($rights->allow_administer
                 ? $rights->nonblind || $rights->rights_force /* chair can't see blind authors unless forceShow */
-                : $rights->act_author_view);
+                : $rights->act_author_view)
+            || ($this->conf->subBlindNever() && ($this->conf->setting("rev_open")>0));
     }
 
     function can_view_some_authors() {

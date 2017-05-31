@@ -250,7 +250,7 @@ class CommentInfo {
             $cj->author = Text::user_html($user);
             $cj->author_email = $user->email;
             $cj->is_author = $idable;
-            if (!$idable)
+            if (!$idable && !$this->conf->subBlindNever())
                 $cj->author_hidden = true;
         }
         if ($this->timeModified > 0 && $idable_override) {

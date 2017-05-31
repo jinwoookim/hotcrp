@@ -1713,8 +1713,9 @@ class Conf {
         global $Me;
         return ($this->setting("rev_open")>0) 
         && ($this->setting("rev_showallusers")>0) 
-        && ($Me->is_author() || $Me->privChair || $Me->isPC);
+        && ($Me->is_participant());
     }
+    
     function timeStartPaper() {
         return $this->deadlinesBetween("sub_open", "sub_reg", "sub_grace");
     }
