@@ -113,7 +113,7 @@ function pc_request_as_json($cj) {
         if ($pctype === "chair")
             $cj->roles->chair = $cj->roles->pc = true;
         if ($pctype == "pa")
-            $cj->roles->participant = true;
+            $cj->roles->pa = true;
         if ($pctype === "pc")
             $cj->roles->pc = true;
         if ($Qreq->ass)
@@ -284,7 +284,7 @@ function parseBulkFile($text, $filename) {
                     $lcline[] = "email";
                 else if (strpos($line[$i], " ") !== false && array_search("name", $lcline) === false)
                     $lcline[] = "name";
-                else if (array_search($line[$i], ["pc", "chair"]) !== false && array_search("roles", $lcline) === false)
+                else if (array_search($line[$i], ["pc", "chair", "pa"]) !== false && array_search("roles", $lcline) === false)
                     $lcline[] = "roles";
                 else if (array_search("name", $lcline) !== false && array_search("affiliation", $lcline) === false)
                     $lcline[] = "affiliation";
@@ -411,7 +411,8 @@ else if (isset($Qreq->bulkregister) && $newProfile && $Qreq->has_file("bulk")) {
             if ($UserStatus->error_messages())
                 $Conf->confirmMsg('Profile updated. <div class="mmm">' . join('</div><div class="mmm">', $UserStatus->error_messages()) . "</div>");
             else
-                $Conf->confirmMsg("Profile updated.");
+                $Conf->confirmMsg("Profile updated11 ". sizeof($cj->roles) . ".");
+            
             if ($Acct->contactId == $Me->contactId)
                 $Me->update_trueuser(true);
             else
@@ -779,7 +780,7 @@ if ($newProfile || $Acct->contactId != $Me->contactId || $Me->privChair) {
                    "pa" => "Participant (Not on the PC)",
                    "no" => "No Participant") as $k => $v) {
         echo Ht::radio_h("pctype", $k, $pcrole === $k,
-                          array("id" => "pctype_$k", "onchange" => "fold('account',\$\$('pctype_no').checked,1)")),
+                          array("id" => "pctype_$k", "onchange" => "fold('account',\$\$('pctype_no').checked||\$\$('pctype_pa').checked,1)")),
             "&nbsp;", Ht::label($v), "<br />\n";
     }
 
@@ -898,6 +899,7 @@ echo Ht::actions($buttons, ["class" => "aab aabr aabig"]);
 echo "</div>\n", // foldaccount
     "</div>\n", // aahc
     "</form>\n";
+
 
 if ($newProfile) {
     echo '</div><div class="fx9">';

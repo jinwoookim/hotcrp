@@ -74,6 +74,7 @@ class Contact {
     private $rights_version_ = 0;
     public $roles = 0;
     var $isPC = false;
+    var $isParticipant = false;
     var $privChair = false;
     public $contactTags = null;
     public $tracker_kiosk_state = false;
@@ -182,6 +183,8 @@ class Contact {
                 $roles |= self::ROLE_PC;
             if (get($user, "isAssistant"))
                 $roles |= self::ROLE_ADMIN;
+            if (get($user, "isParticipant"))
+                $roles |= self::ROLE_PARTICIPANT;
             if (get($user, "isChair"))
                 $roles |= self::ROLE_CHAIR;
             $this->assign_roles($roles);
@@ -261,6 +264,7 @@ class Contact {
     private function assign_roles($roles) {
         $this->roles = $roles;
         $this->isPC = ($roles & self::ROLE_PCLIKE) != 0;
+        $this->isParticipant = ($roles & self::ROLE_PARTICIPANT) != 0;
         $this->privChair = ($roles & (self::ROLE_ADMIN | self::ROLE_CHAIR)) != 0;
     }
 
@@ -829,6 +833,8 @@ class Contact {
             $roles |= self::ROLE_PC;
         if (isset($j->chair) && $j->chair)
             $roles |= self::ROLE_CHAIR | self::ROLE_PC;
+        if (isset($j->pa) && $j->pa)
+            $roles |= self::ROLE_PARTICIPANT;
         if (isset($j->sysadmin) && $j->sysadmin)
             $roles |= self::ROLE_ADMIN;
         return $roles;
@@ -1509,7 +1515,7 @@ class Contact {
     }
 
     function is_participant() {
-        return ($this->is_author() && ($this->conf->setting("rev_open")>0)) || $this->privChair || $this->isPC;
+        return (($this->is_author() || $this->isParticipant) && ($this->conf->setting("rev_open")>0)) || $this->privChair || $this->isPC;
     }
     
     function has_review() {

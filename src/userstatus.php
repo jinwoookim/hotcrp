@@ -69,7 +69,7 @@ class UserStatus {
             else if ($user->roles & Contact::ROLE_PC)
                 $cj->roles->pc = true;
             else if ($user->roles & Contact::ROLE_PARTICIPANT)
-                $cj->roles->participant = true;
+                $cj->roles->pa = true;
             if ($user->roles & Contact::ROLE_ADMIN)
                 $cj->roles->sysadmin = true;
         }

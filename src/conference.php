@@ -1732,9 +1732,14 @@ class Conf {
     }
     function showAllPapers() {
         global $Me;
-        return ($this->setting("rev_open")>0) 
-        && ($this->setting("rev_showallusers")>0) 
-        && ($Me->is_participant());
+        return ($Me->is_participant()
+                && ($this->setting("rev_showallusers")>0) 
+                && (($this->setting("rev_open")>0) 
+                    || ($this->deadlinesAfter("sub_open") 
+                        && ($this->setting("cmt_always")>0) )
+                    )
+                 )
+                ;
     }
     
     function timeStartPaper() {
