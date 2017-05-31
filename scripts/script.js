@@ -2801,26 +2801,35 @@ function render_editing(hc, cj) {
         // visibility
         hc.push('<div class="cmteditinfo f-i fold2o">', '</div>');
         hc.push('<div class="f-ix">', '</div>');
-        hc.push('<div class="f-c">Visibility</div>');
+        hc.push('<div class="f-c">Visibility'
+               + ((cj.vis_text && (cj.vis_text != ''))? ' fixed to: <i>' + cj.vis_text : '</i>' )
+               + '</div>');
         hc.push('<div class="f-e">', '</div>');
-        hc.push('<select name="visibility" tabindex="1">', '</select>');
-        hc.push('<option value="au">Visible to authors'
-                + (hotcrp_status.rev.blind === true ? " (anonymous to authors)" : "")
-                + '</option>');
-        hc.push('<option value="rev">Hidden from authors</option>');
-        hc.push('<option value="pc">Hidden from authors and external reviewers</option>');
-        hc.push('<option value="admin">Administrators only</option>');
-        hc.pop();
-        hc.push('<div class="fx2 hint">', '</div>');
-        if (hotcrp_status.rev.blind && hotcrp_status.rev.blind !== true)
-            hc.push('<input type="checkbox" name="blind" value="1" tabindex="1" id="htctlcb' + idctr + '" />&nbsp;<label for="htctlcb' + idctr + '">Anonymous to authors</label><br />\n');
-        if (hotcrp_status.myperm
-            && hotcrp_status.myperm.some_author_can_view_review)
-            hc.push('Authors will be notified immediately.');
+        if(!cj.vis_text || cj.vis_text == '')
+        {
+            hc.push('<select name="visibility" tabindex="3">', '</select>');
+            hc.push('<option value="all">Public comment</option>');
+            hc.push('<option value="pa">Visible to all participants</option>');
+            hc.push('<option value="au">Visible to authors'
+                    + (hotcrp_status.rev.blind === true ? " (anonymous to authors)" : "")
+                    + '</option>');
+            hc.push('<option value="rev">Hidden from authors</option>');
+            hc.push('<option value="pc">Hidden from authors and external reviewers</option>');
+            hc.push('<option value="admin">Administrators only</option>');
+            hc.pop();
+            hc.push('<div class="fx2 hint">', '</div>');
+            if (hotcrp_status.rev.blind && hotcrp_status.rev.blind !== true)
+                hc.push('<input type="checkbox" name="blind" value="1" tabindex="1" id="htctlcb' + idctr + '" />&nbsp;<label for="htctlcb' + idctr + '">Anonymous to authors</label><br />\n');
+            if (hotcrp_status.myperm
+                && hotcrp_status.myperm.some_author_can_view_review)
+                hc.push('Authors will be notified immediately.');
+            else
+                hc.push('Authors cannot view comments at the moment.');
+            hc.pop_n(3);
+        }
         else
-            hc.push('Authors cannot view comments at the moment.');
-        hc.pop_n(3);
-
+            hc.push('<input type="hidden" name="visibility" value="admin" />');
+        
         // tags
         hc.push('<div class="f-ix" style="margin-left:4em"><div class="f-c">Tags</div>', '</div>')
         hc.push('<textarea name="commenttags" tabindex="1" cols="40" rows="1" style="font-size:smaller"></textarea>');

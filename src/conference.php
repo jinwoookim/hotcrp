@@ -29,8 +29,11 @@ class Track {
 }
 
 class Conf {
-    public $dblink = null;
 
+    public $dblink = null;
+    
+    var $vismap;
+    var $vismap_str;
     var $settings;
     private $settingTexts;
     public $sversion;
@@ -146,6 +149,24 @@ class Conf {
     function load_settings() {
         global $Now;
 
+        $this->vismap = array([
+        0 => "", 
+        1 => "all", 
+        2 => "pa",
+        3 => "au", 
+        4 => "rev", 
+        5 => "pc", 
+        6 => "admin"
+        ]);
+        $this->vismap_str = array([
+        0 => "No, let user choose", 
+        1 => "Visible to the public", 
+        2 => "Visible to all participants",
+        3 => "Visible to authors", 
+        4 => "Visible only to reviewers", 
+        5 => "Visible only to PC", 
+        6 => "Visible only to admins"
+        ]);
         // load settings from database
         $this->settings = array();
         $this->settingTexts = array();
@@ -1830,8 +1851,43 @@ class Conf {
     function timeEmailChairAboutReview() {
         return get($this->settings, "rev_notifychair") > 0;
     }
-    function commentsAlwaysVisible() {
-        return get($this->settings, "rev_fullyvis") > 0;
+    function commentEnforcedLevel() {
+        $gotVal = get($this->settings, "rev_enforcevis");
+         if($gotVal < 1 || $gotVal > 6)
+             return "";
+         else
+         {
+              //TODO: why is $this->vismap not working???
+              $vismap_loc = [0 => "", 
+                            1 => "all", 
+                            2 => "pa",
+                            3 => "au", 
+                            4 => "rev", 
+                            5 => "pc", 
+                            6 => "admin"
+                            ];
+             return $vismap_loc[$gotVal];
+         }
+    }
+    function commentEnforcedLevelText() {
+        $gotVal = get($this->settings, "rev_enforcevis");
+         if($gotVal < 1 || $gotVal > 6)
+             return "";
+         else
+         {
+             //TODO: why is $this->vismap_str not working???
+             $vismap_str_loc = [ 0 => "No, let user choose", 
+                                1 => "Visible to the public", 
+                                2 => "Visible to all participants",
+                                3 => "Visible to authors", 
+                                4 => "Visible only to reviewers", 
+                                5 => "Visible only to PC", 
+                                6 => "Visible only to admins"];
+             return $vismap_str_loc[$gotVal];
+         }
+    }
+    function getCommentEnforceMap() {
+        return $this->vismap_str;
     }
     function submission_blindness() {
         return $this->settings["sub_blind"];

@@ -72,9 +72,20 @@ function render(SettingValues $sv) {
     echo "<div class='g'></div>\n";
     $sv->echo_checkbox('rev_notifychair', 'Notify PC chairs of newly submitted reviews by email');
     $sv->echo_checkbox('rev_finalcomments','Users cannot change their posted comments.');
-    $sv->echo_checkbox('rev_fullyvis', 'Comments are always visible to all participants');
-
-
+    //TODO: why does $sv->conf->vismap_str not work???
+    echo '<div class="g">', $sv->label("rev_enforcevishide", "Enforce visibility for comments?"),
+        '&nbsp; ',
+        $sv->render_select("rev_enforcevis", [
+        0 => "No, let user choose", 
+        1 => "Visible to the public", 
+        2 => "Visible to all participants",
+        3 => "Visible to authors", 
+        4 => "Visible only to reviewers", 
+        5 => "Visible only to PC", 
+        6 => "Visible only to admins"
+        ]), 
+        '</div>';
+        
     // Deadlines
     echo "<h3 id=\"rounds\" class=\"settings g\">Deadlines &amp; rounds</h3>\n";
     echo '<p class="hint">Reviews are due by the deadline, but <em>cannot be modified</em> after the hard deadline. Most conferences don’t use hard deadlines for reviews.<br />', ($sv->type_hint("date") ? : ""), '</p>';

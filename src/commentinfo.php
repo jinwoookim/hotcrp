@@ -24,7 +24,7 @@ class CommentInfo {
     public $editable_enable = false;
 
     static private $watching;
-    static private $visibility_map = array(COMMENTTYPE_ADMINONLY => "admin", COMMENTTYPE_PCONLY => "pc", COMMENTTYPE_REVIEWER => "rev", COMMENTTYPE_AUTHOR => "au", COMMENTTYPE_ALL => "all");
+    static private $visibility_map = array(COMMENTTYPE_ADMINONLY => "admin", COMMENTTYPE_PCONLY => "pc", COMMENTTYPE_REVIEWER => "rev", COMMENTTYPE_AUTHOR => "au", COMMENTTYPE_PARTICIPANTS => "pa", COMMENTTYPE_ALL => "all");
 
 
     function __construct($x, PaperInfo $prow = null, Conf $conf = null) {
@@ -216,16 +216,18 @@ class CommentInfo {
         if (!$this->commentId) {
             if (!$contact->can_comment($this->prow, $this))
                 return false;
-            $cj = (object) array("pid" => $this->prow->paperId, "is_new" => true, "editable" => $this->editable_enable, "is_author" => true);
+            $cj = (object) array("pid" => $this->prow->paperId, "is_new" => true, "editable" => $this->editable_enable, "is_author" => true, "vis_text" => "testb");
+            $cj->vis_text = "test2";
             if ($this->commentType & COMMENTTYPE_RESPONSE)
                 $cj->response = $this->conf->resp_round_name($this->commentRound);
             return $cj;
         }
 
         // otherwise, viewable comment
-        $cj = (object) array("pid" => $this->prow->paperId, "cid" => $this->commentId, "is_author" => false);
+        $cj = (object) array("pid" => $this->prow->paperId, "cid" => $this->commentId, "is_author" => false, "vis_text" => "testc");
         $cj->ordinal = $this->unparse_ordinal();
         $cj->visibility = self::$visibility_map[$this->commentType & COMMENTTYPE_VISIBILITY];
+        $cj->vis_text = "test";//$this->conf->commentEnforcedLevelText();
         if ($this->commentType & COMMENTTYPE_BLIND)
             $cj->blind = true;
         if ($this->commentType & COMMENTTYPE_DRAFT)
@@ -250,6 +252,7 @@ class CommentInfo {
             $cj->author = Text::user_html($user);
             $cj->author_email = $user->email;
             $cj->is_author = $idable;
+            $cj->vis_text = $this->conf->commentEnforcedLevelText();
             if (!$idable && !$this->conf->subBlindNever())
                 $cj->author_hidden = true;
         }
@@ -347,7 +350,9 @@ set $okey=(t.maxOrdinal+1) where commentId=$cmtid";
         $Table = $this->prow->comment_table_name();
         $LinkTable = $this->prow->table_name();
         $LinkColumn = $this->prow->id_column();
-        $req_visibility = get($req, "visibility");
+        $req_visibility = $this->conf->commentEnforcedLevel();
+        if($req_visibility == "")
+            $req_visibility = get($req, "visibility");
 
         $is_response = !!($this->commentType & COMMENTTYPE_RESPONSE);
         if ($is_response && get($req, "submit"))
@@ -360,8 +365,10 @@ set $okey=(t.maxOrdinal+1) where commentId=$cmtid";
             $ctype = COMMENTTYPE_PCONLY;
         else if ($req_visibility == "admin")
             $ctype = COMMENTTYPE_ADMINONLY;
-        else if ($req_visibility == "all")
+        else if ($req_visibility == "all" || $req_visibility=="public")
             $ctype = COMMENTTYPE_ALL;
+        else if ($$req_visibility == "pa")
+            $ctype = COMMENTTYPE_PARTICIPANTS;
         else if ($this->commentId && $req_visibility === null)
             $ctype = $this->commentType;
         else // $req->visibility == "r" || $req->visibility == "rev"

@@ -226,9 +226,9 @@
         "name": "Users cannot change their posted comments.",
         "type": "checkbox"
     },
-    "rev_fullyvis": {
-        "name": "Comments are always visible to all participants",
-        "type": "checkbox"
+    "rev_enforcevis": {
+        "name": "PC conflict visibility",
+        "type": "radio", "values": [0, 1, 2, 3, 4, 5, 6], "default_value": 0
     },
     "rev_open": {
         "name": "Open site for reviewing",

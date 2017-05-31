@@ -264,6 +264,8 @@ var revfield_template = '<div id="revfield_$" class="settings_revfield f-contain
     <div class="f-ix">\
       <div class="f-c">Visibility</div>\
       <select name="authorView_$" id="authorView_$" class="reviewfield_authorView">\
+        <option value="all">Public comment</option>\
+        <option value="pa">Shown all participants</option>\
         <option value="au">Shown to authors</option>\
         <option value="pc">Hidden from authors</option>\
         <option value="audec">Hidden from authors until decision</option>\

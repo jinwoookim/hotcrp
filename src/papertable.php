@@ -2190,7 +2190,7 @@ class PaperTable {
         if ($this->include_comments()) {
             if ($Me->can_comment($this->prow, null)) {
                 ++$ncmt;
-                $s .= "papercomment.add({is_new:true,editable:true});\n";
+                $s .= "papercomment.add({is_new:true,editable:true,vis_text:'".$this->conf->commentEnforcedLevelText()."'});\n";
             }
             if ($this->prow->has_author($Me))
                 foreach ($this->conf->time_author_respond() as $i => $rname) {
