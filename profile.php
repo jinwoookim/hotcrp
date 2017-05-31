@@ -112,6 +112,8 @@ function pc_request_as_json($cj) {
         $pctype = $Qreq->pctype;
         if ($pctype === "chair")
             $cj->roles->chair = $cj->roles->pc = true;
+        if ($pctype == "pa")
+            $cj->roles->participant = true;
         if ($pctype === "pc")
             $cj->roles->pc = true;
         if ($Qreq->ass)
@@ -623,9 +625,11 @@ if (isset($formcj->roles)) {
         $pcrole = "chair";
     else if (get($formcj->roles, "pc"))
         $pcrole = "pc";
+    else if (get($formcj->roles, "pa"))
+        $pcrole = "pa";
 }
 if (!$useRequest && $Me->privChair && $newProfile
-    && ($Qreq->role == "chair" || $Qreq->role == "pc"))
+    && ($Qreq->role == "chair" || $Qreq->role == "pc" || $Qreq->role == "pa"))
     $pcrole = $Qreq->role;
 
 
@@ -772,7 +776,8 @@ if ($newProfile || $Acct->contactId != $Me->contactId || $Me->privChair) {
       "<table><tr><td class=\"nw\">\n";
     foreach (array("chair" => "PC chair",
                    "pc" => "PC member",
-                   "no" => "Not on the PC") as $k => $v) {
+                   "pa" => "Participant (Not on the PC)",
+                   "no" => "No Participant") as $k => $v) {
         echo Ht::radio_h("pctype", $k, $pcrole === $k,
                           array("id" => "pctype_$k", "onchange" => "fold('account',\$\$('pctype_no').checked,1)")),
             "&nbsp;", Ht::label($v), "<br />\n";

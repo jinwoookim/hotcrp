@@ -68,6 +68,8 @@ class UserStatus {
                 $cj->roles->chair = $cj->roles->pc = true;
             else if ($user->roles & Contact::ROLE_PC)
                 $cj->roles->pc = true;
+            else if ($user->roles & Contact::ROLE_PARTICIPANT)
+                $cj->roles->participant = true;
             if ($user->roles & Contact::ROLE_ADMIN)
                 $cj->roles->sysadmin = true;
         }
@@ -294,7 +296,7 @@ class UserStatus {
             $cj->bad_roles = array();
             foreach ((array) $cj->roles as $k => $v)
                 if ($v && $k !== "pc" && $k !== "chair" && $k !== "sysadmin"
-                    && $k !== "no")
+                    && $k !== "no" && $k !== "pa")
                     $cj->bad_roles[] = $k;
             if ($old_user
                 && (($this->no_deprivilege_self && $Me && $Me->contactId == $old_user->contactId)

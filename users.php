@@ -133,10 +133,12 @@ if ($getaction == "pcinfo" && isset($papersel) && $Me->privChair) {
             && ($user->roles & (Contact::ROLE_ADMIN | Contact::ROLE_CHAIR)))
             $f[] = "allfinal";
         $row->follow = join(",", $f);
-        if ($user->roles & (Contact::ROLE_PC | Contact::ROLE_ADMIN | Contact::ROLE_CHAIR)) {
+        if ($user->roles & (Contact::ROLE_PC | Contact::ROLE_ADMIN | Contact::ROLE_CHAIR | Contact::ROLE_PARTICIPANT)) {
             $r = array();
             if ($user->roles & Contact::ROLE_CHAIR)
                 $r[] = "chair";
+            if ($user->roles & Contact::ROLE_PARTICIPANT)
+                $r[] = "pa";
             if ($user->roles & Contact::ROLE_PC)
                 $r[] = "pc";
             if ($user->roles & Contact::ROLE_ADMIN)

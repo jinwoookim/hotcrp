@@ -63,6 +63,7 @@ class Contact {
     const ROLE_PCLIKE = 15;
     const ROLE_AUTHOR = 16;
     const ROLE_REVIEWER = 32;
+    const ROLE_PARTICIPANT = 64;
     private $is_author_;
     private $has_review_;
     private $has_outstanding_review_ = null;
@@ -1059,6 +1060,7 @@ class Contact {
         $actor_email = ($actor ? " by $actor->email" : "");
         foreach (array(self::ROLE_PC => "pc",
                        self::ROLE_ADMIN => "sysadmin",
+                       self::ROLE_PARTICIPANT => "pa",
                        self::ROLE_CHAIR => "chair") as $role => $type)
             if (($new_roles & $role) && !($old_roles & $role))
                 $this->conf->log("Added as $type$actor_email", $this);
