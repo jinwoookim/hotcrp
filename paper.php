@@ -8,8 +8,6 @@ require_once("src/initweb.php");
 require_once("src/papertable.php");
 if ($Me->is_empty())
     $Me->escape();
-if (!$Me->is_participant())
-    $Me->escape();
 if (check_post() && !$Me->has_database_account()) {
     if (isset($_REQUEST["update"]) && $Me->can_start_paper())
         $Me = $Me->activate_database_account();
@@ -61,6 +59,9 @@ function errorMsgExit($msg) {
 $newPaper = (defval($_REQUEST, "p") == "new"
              || defval($_REQUEST, "paperId") == "new");
 
+if (!$Me->is_participant() && !$newPaper)
+    $Me->escape();
+             
 // general error messages
 if (isset($_GET["post"]) && $_GET["post"] && !count($_POST))
     $Conf->post_missing_msg();
