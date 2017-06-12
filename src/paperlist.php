@@ -1362,8 +1362,13 @@ class PaperList {
         $body = array();
         $lastheading = empty($this->search->groupmap) ? -2 : -1;
         $need_render = false;
+        $max_rows_v = 999999;
+        if(isset($options["max_rows"]))
+            $max_rows_v = (int)$options["max_rows"];
         foreach ($rows as $row) {
             ++$this->count;
+            if($this->count > $max_rows_v)
+                break;
             if ($lastheading > -2)
                 $lastheading = $this->_check_heading($this->_row_thenval($row), $rstate, $rows, $lastheading, $body);
             $body[] = $this->_row_text($rstate, $row, $fieldDef);

@@ -478,11 +478,11 @@ if ($Me->is_reviewer() && ($Me->privChair || $papersub)) {
 
 if($Conf->showAllPapers()){
 
-    echo '<h4>Comment Submissions:</h4>';
+    echo '<h4>Comment these submissions:</h4><br /><h5>Please provide constructive feedback to the authors. All participants of the conference can see your comments together with your identity.</h5>';
 
     $plist = null;
     $plist = new PaperList(new PaperSearch($Me, ["t" => "s"]));
-    $ptext = $plist->table_html("openreviewHome", ["list" => true]);
+    $ptext = $plist->table_html("openreviewHome", ["list" => true, "max_rows" => 13]);
     if ($plist->count > 0)
         echo "<div class='g'></div>\n", $ptext;
 
