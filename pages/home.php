@@ -496,7 +496,7 @@ if ($Me->is_author() || $Conf->timeStartPaper() > 0 || $Me->privChair
 
     // Overview
     if($Conf->showAllPapers())
-        echo "<h4><a href='", hoturl("search", "t=s&q="), "'>View all submission</a>&nbsp;</h4> <br />";
+        echo "<h5><a href='", hoturl("search", "t=s&q="), "'>View all submission</a>&nbsp;</h5> <br />";
     if ($Me->is_author())
         echo "<h4>Your Submissions: &nbsp;</h4> ";
     else
