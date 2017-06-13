@@ -411,7 +411,7 @@ else if (isset($Qreq->bulkregister) && $newProfile && $Qreq->has_file("bulk")) {
             if ($UserStatus->error_messages())
                 $Conf->confirmMsg('Profile updated. <div class="mmm">' . join('</div><div class="mmm">', $UserStatus->error_messages()) . "</div>");
             else
-                $Conf->confirmMsg("Profile updated11 ". sizeof($cj->roles) . ".");
+                $Conf->confirmMsg("Profile updated.");
             
             if ($Acct->contactId == $Me->contactId)
                 $Me->update_trueuser(true);
