@@ -29,6 +29,11 @@ class CommentInfo {
 
     function __construct($x, PaperInfo $prow = null, Conf $conf = null) {
         $this->merge(is_object($x) ? $x : null, $prow, $conf);
+        if($conf) {
+            $this->editable_enable = !$conf->setting("rev_finalcomments");
+        }else{
+            $this->editable_enable = false;
+        }
     }
 
     private function merge($x, PaperInfo $prow = null, Conf $conf = null) {
@@ -206,13 +211,13 @@ class CommentInfo {
     }
 
     function unparse_json($contact, $include_displayed_at = false) {
-
+        global $Me;
         //$is_paper_author = $this->prow.
 
         if ($this->commentId && !$contact->can_view_comment($this->prow, $this, null))
             return false;
 
-        // placeholder for new comment
+
         if (!$this->commentId) {
             if (!$contact->can_comment($this->prow, $this))
                 return false;
@@ -234,8 +239,11 @@ class CommentInfo {
             $cj->draft = true;
         if ($this->commentType & COMMENTTYPE_RESPONSE)
             $cj->response = $this->conf->resp_round_name($this->commentRound);
-        if ($contact->can_comment($this->prow, $this))
-            $cj->editable = $this->editable_enable;
+        //if($Me->is_author())
+        //if ($contact->can_comment($this->prow, $this))
+        //    $cj->editable = $this->editable_enable;
+        if($Me->is_admin())
+            $cj->editable = true;
 
         // tags
         if (($tags = $this->viewable_tags($contact))) {
@@ -367,7 +375,7 @@ set $okey=(t.maxOrdinal+1) where commentId=$cmtid";
             $ctype = COMMENTTYPE_ADMINONLY;
         else if ($req_visibility == "all" || $req_visibility=="public")
             $ctype = COMMENTTYPE_ALL;
-        else if ($$req_visibility == "pa")
+        else if ($req_visibility == "pa")
             $ctype = COMMENTTYPE_PARTICIPANTS;
         else if ($this->commentId && $req_visibility === null)
             $ctype = $this->commentType;

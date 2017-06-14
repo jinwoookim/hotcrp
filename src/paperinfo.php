@@ -1067,7 +1067,8 @@ class PaperInfo {
 
 
     function num_comments() {
-        return count($this->fetch_comments());
+        global $Me;
+        return count($this->viewable_comments($Me));
     }
 
 

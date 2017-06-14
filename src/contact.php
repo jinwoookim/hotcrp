@@ -2687,8 +2687,8 @@ class Contact {
     function can_view_comment(PaperInfo $prow, $crow, $forceShow) {
         $ctype = $crow ? $crow->commentType : COMMENTTYPE_AUTHOR;
         $rights = $this->rights($prow, $forceShow);
-        $openreview = true;
-        return $openreview || ($crow && $crow->contactId == $this->contactId) // wrote this comment
+
+        return ($crow && $crow->contactId == $this->contactId) // wrote this comment
             || ($crow && $crow->contactId == $rights->review_token_cid)
             || $rights->can_administer
             || ($rights->act_author_view
@@ -2703,7 +2703,13 @@ class Contact {
                     || $prow->review_not_incomplete($this))
                 && ($rights->allow_pc
                     ? $ctype >= COMMENTTYPE_PCONLY
-                    : $ctype >= COMMENTTYPE_REVIEWER));
+                    : $ctype >= COMMENTTYPE_REVIEWER))
+            ||  $this->is_participant() && ($ctype & COMMENTTYPE_PARTICIPANTS == COMMENTTYPE_PARTICIPANTS)
+            || ($ctype & COMMENTTYPE_ALL) == COMMENTTYPE_ALL;
+            ;
+         //
+
+
     }
 
     function can_view_new_comment_ignore_conflict(PaperInfo $prow) {
