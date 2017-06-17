@@ -3072,7 +3072,7 @@ class Conf {
             echo Ht::unstash();
 
         // Callback for version warnings
-        if ($Me && $Me->privChair
+        if (false && $Me && $Me->privChair
             && (!isset($_SESSION["updatecheck"])
                 || $_SESSION["updatecheck"] + 20 <= $Now)
             && (!isset($this->opt["updatesSite"]) || $this->opt["updatesSite"])) {

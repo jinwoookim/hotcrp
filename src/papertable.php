@@ -1339,6 +1339,30 @@ class PaperTable {
         $this->_papstripLeadShepherd("manager", "Paper administrator", $showedit || $this->qreq->atab === "manager", null);
     }
 
+    private function num_user_votes(){
+        global $Me;
+        $votecnt = 0;
+        $sqlbase = "vote";
+        $result = $this->conf->q("select paperId, tag, tagIndex from PaperTag where tag like '%~{$sqlbase}'");
+        $pvals = array();
+        $cvals = array();
+        $negative = false;
+        while (($row = edb_row($result))) {
+            $who = substr($row[1], 0, strpos($row[1], "~"));
+            if ($row[2] < 0) {
+                $sv->error_at(null, "Removed " . Text::user_html($pcm[$who]) . "’s negative “{$base}” vote for paper #$row[0].");
+                $negative = true;
+            } else {
+                $pvals[$row[0]] = defval($pvals, $row[0], 0) + $row[2];
+                $cvals[$who] = defval($cvals, $who, 0) + $row[2];
+            }
+            if($who == $Me->contactId){
+                $votecnt++;
+            }
+        }
+        echo "<h1> uSER vOTES: $votecnt</h1>";
+    }
+
     private function papstripTags() {
         global $Me;
         if (!$this->prow || !$Me->can_view_tags($this->prow))
@@ -1359,6 +1383,7 @@ class PaperTable {
         $color = $this->prow->conf->tags()->color_classes($viewable);
         echo '<div class="', trim("has-tag-classes pscopen $color"), '">';
 
+        $is_editable = true;
         if ($is_editable)
             echo Ht::form_div(hoturl("paper", "p=" . $this->prow->paperId), ["id" => "tagform", "onsubmit" => "return save_tags()"]);
 
@@ -1366,7 +1391,10 @@ class PaperTable {
             '<div class="psv">';
         if ($is_editable) {
             // tag report form
-            $treport = PaperApi::tagreport($Me, $this->prow);
+
+            //$vt = $Me->conf->tags();
+            //echo "<h1>".var_dump($vt)."</h1>";
+            $this->num_user_votes();
 
             // uneditable
             echo '<div class="fn taghl">';
@@ -1823,7 +1851,7 @@ class PaperTable {
     function _papstrip() {
         global $Me;
         $prow = $this->prow;
-        if (($prow->managerContactId || ($Me->privChair && $this->mode === "assign"))
+        if (($prow->managerContactId || true || ($Me->privChair && $this->mode === "assign"))
             && $Me->can_view_manager($prow))
             $this->papstripManager($Me->privChair);
         $this->papstripTags();

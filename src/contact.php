@@ -682,6 +682,9 @@ class Contact {
     }
 
     function viewable_tags(Contact $user) {
+        if($user->is_author()){
+            $tags = $this-$this->all_contact_tags();
+        }
         if ($user->isPC) {
             $tags = $this->all_contact_tags();
             return Tagger::strip_nonviewable($tags, $user);
@@ -2082,6 +2085,7 @@ class Contact {
     }
 
     function can_view_manager(PaperInfo $prow = null, $forceShow = null) {
+        return true;
         if ($this->privChair)
             return true;
         if (!$prow)
@@ -2865,6 +2869,7 @@ class Contact {
     function can_view_tags(PaperInfo $prow = null, $forceShow = null) {
         // see also PaperApi::alltags,
         // Contact::list_submitted_papers_with_viewable_tags
+        return true;
         if (!$prow)
             return $this->isPC;
         $rights = $this->rights($prow, $forceShow);
@@ -2886,10 +2891,11 @@ class Contact {
         $rights = $this->rights($prow, $forceShow);
         $tag = TagInfo::base($tag);
         $twiddle = strpos($tag, "~");
-        return ($rights->allow_pc
+        $all_review = $this->conf->setting("user_voting");
+        return ($rights->allow_pc || $all_review
                 || ($rights->allow_pc_broad && $this->conf->tag_seeall)
                 || ($this->privChair && $this->conf->tags()->is_sitewide($tag)))
-            && ($rights->allow_administer
+            && ($rights->allow_administer || $all_review
                 || $twiddle === false
                 || ($twiddle === 0 && $tag[1] !== "~")
                 || ($twiddle > 0
@@ -2948,6 +2954,9 @@ class Contact {
     }
 
     function can_change_tag(PaperInfo $prow, $tag, $previndex, $index, $forceShow = null) {
+        if($this->conf->setting("user_voting")){ //  && $tag == "~vote"
+            return true;
+        }
         if ($forceShow === ALWAYS_OVERRIDE)
             return true;
         $rights = $this->rights($prow, $forceShow);
@@ -2986,12 +2995,42 @@ class Contact {
         }
     }
 
+    function num_user_votes(){
+        global $Me;
+        $votecnt = 0;
+        $sqlbase = "vote";
+        $result = $this->conf->q("select paperId, tag, tagIndex from PaperTag where tag like '%~{$sqlbase}'");
+        $pvals = array();
+        $cvals = array();
+        $negative = false;
+        while (($row = edb_row($result))) {
+            $who = substr($row[1], 0, strpos($row[1], "~"));
+            if ($row[2] < 0) {
+                $sv->error_at(null, "Removed " . Text::user_html($pcm[$who]) . "’s negative “{$base}” vote for paper #$row[0].");
+                $negative = true;
+            } else {
+                $pvals[$row[0]] = defval($pvals, $row[0], 0) + $row[2];
+                $cvals[$who] = defval($cvals, $who, 0) + $row[2];
+            }
+            if($who == $Me->contactId){
+                $votecnt++;
+            }
+        }return $votecnt;
+
+        //echo "<h1> uSER vOTES: $votecnt</h1>";
+    }
+
     function perm_change_tag(PaperInfo $prow, $tag, $previndex, $index, $forceShow = null) {
+        return null;
+
         if ($this->can_change_tag($prow, $tag, $previndex, $index, $forceShow))
             return null;
         $rights = $this->rights($prow, $forceShow);
         $whyNot = $prow->initial_whynot();
         $whyNot["tag"] = $tag;
+
+
+
         if (!$this->isPC)
             $whyNot["permission"] = true;
         else if ($rights->conflict_type > 0) {

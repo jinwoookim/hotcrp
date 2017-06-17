@@ -106,6 +106,18 @@ class PaperApi {
         if ($prow && !$user->can_view_paper($prow))
             return ["ok" => false, "error" => "No such paper."];
 
+        if($user->conf->setting("user_voting")) {
+            $num_user_votes = $user->num_user_votes();
+            $vote_limit = $user->is_pc_member() || $user->is_admin() ? $user->conf->setting("votes_per_pc2") : $user->conf->setting("votes_per_user2");
+            $allow_clear = $qreq->addtags == "~vote#clear";
+            if (!$allow_clear && $num_user_votes >= $vote_limit) {
+                json_exit(["ok" => false, "error" => "vote limit reached"], true);
+            }
+            if($prow->has_author($user)){
+                json_exit(["ok" => false, "error" => "you cannot vote for your submission"], true);
+            }
+        }
+
         // save tags using assigner
         $pids = [];
         $x = array("paper,action,tag");

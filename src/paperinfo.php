@@ -488,6 +488,9 @@ class PaperInfo {
             return Tagger::strip_nonviewable($this->all_tags_text(), $user);
         else if ($user->privChair && $user->can_view_tags($this, $forceShow))
             return Tagger::strip_nonsitewide($this->all_tags_text(), $user);
+        else if($user->is_author()){
+            return Tagger::strip_nonviewable($this->all_tags_text(), $user);
+        }
         else
             return "";
     }
@@ -495,7 +498,7 @@ class PaperInfo {
     function editable_tags(Contact $user) {
         $tags = $this->viewable_tags($user);
         if ($tags !== "") {
-            $privChair = $user->allow_administer($this);
+            $privChair = true; // $user->allow_administer($this);
             $etags = array();
             foreach (explode(" ", $tags) as $tag)
                 if (!($tag === ""

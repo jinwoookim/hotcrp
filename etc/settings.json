@@ -380,6 +380,20 @@
         "name": "Ranking tags",
         "type": "taglist", "parser": "Tag_SettingParser", "size": 50, "autogrow": true
     },
+    "user_voting": {
+        "name": "User Voting",
+        "type": "checkbox"
+    },
+    "votes_per_user2": {
+      "name": "vote_per_user 2",
+        "type": "zint", "size": 5, "placeholder": "none", "default_value": 4,
+        "extensible": true
+    },
+    "votes_per_pc2": {
+        "name": "votes_per_pc 2",
+        "type": "zint", "size": 5, "placeholder": "none", "default_value": 10,
+        "extensible": true
+    },
     "tag_rounds": {
         "internal": true, "type": "taglist"
     },

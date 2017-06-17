@@ -105,7 +105,18 @@ function render(SettingValues $sv) {
 
     $sv->set_oldv("tag_rank", $sv->conf->setting_data("tag_rank", ""));
     $sv->echo_entry_row("tag_rank", "Ranking tag", "The <a href='" . hoturl("offline") . "'>offline reviewing page</a> will expose support for uploading rankings by this tag. <span class='barsep'>·</span> <a href='" . hoturl("help", "t=ranking") . "'>What is this?</a>");
+
+    $sv->echo_checkbox_row("user_voting","Allow user voting");
+
+    $sv->echo_entry_row("votes_per_user2","Votes per User");
+    $sv->echo_entry_row("votes_per_pc2","Votes per PC");
+   // $sv->set_oldv("votes_per_user", $sv->conf->setting_data("votes_per_user", ""));
+
     echo "</tbody></table>";
+
+   // $sv->echo_checkbox("votes_per_user", "Votes per User");
+   // $sv->set_oldv("votes_per_user2", $sv->conf->setting_data("votes_per_user2", 5));
+
 
     echo "<div class='g'></div>\n";
     $sv->echo_checkbox('tag_seeall', "PC can see tags for conflicted papers");
@@ -267,6 +278,7 @@ class Tag_SettingParser extends SettingParser {
     }
 
     public function save(SettingValues $sv, Si $si) {
+        global $Me;
         if ($si->name == "tag_vote" && $sv->has_savedv("tag_vote")) {
             // check allotments
             $pcm = $sv->conf->pc_members();
@@ -281,6 +293,7 @@ class Tag_SettingParser extends SettingParser {
                 $pvals = array();
                 $cvals = array();
                 $negative = false;
+                $cnt = 0;
                 while (($row = edb_row($result))) {
                     $who = substr($row[1], 0, strpos($row[1], "~"));
                     if ($row[2] < 0) {
@@ -289,6 +302,19 @@ class Tag_SettingParser extends SettingParser {
                     } else {
                         $pvals[$row[0]] = defval($pvals, $row[0], 0) + $row[2];
                         $cvals[$who] = defval($cvals, $who, 0) + $row[2];
+                    }
+                    if($who == $Me->contactId){
+                        $cnt++;
+                    }
+                }
+
+                if($Me->is_pc_member() || $Me->is_admin()){
+                    if($cnt > 2){
+                        $sv->error_at("tag_vote", Text::user_html($pcm[$who]) . "Vote limit reached.");
+                    }
+                }else{
+                    if($cnt > 2){
+                        $sv->error_at("tag_vote", Text::user_html($pcm[$who]) . "Vote limit reached.");
                     }
                 }
 
