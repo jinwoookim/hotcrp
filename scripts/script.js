@@ -3246,6 +3246,7 @@ function make_pseditor(type, url) {
         foldup(folde, null, {f: true});
     }
     function done(ok, message) {
+        j.find(".showvotecnt").remove();
         jQuery(folde).find(".psfn .savesuccess, .psfn .savefailure").remove();
         var s = jQuery("<span class=\"save" + (ok ? "success" : "failure") + "\"></span>");
         s.appendTo(jQuery(folde).find(".psfn"));
@@ -5533,6 +5534,7 @@ function save_tag_index(e) {
         index = indexelt.val();
     index = jQuery.trim(index);
     function done(ok, message) {
+        j.find(".showvotecnt").remove();
         j.find(".psfn .savesuccess, .psfn .savefailure").remove();
         var s = jQuery("<span class=\"save" + (ok ? "success" : "failure") + "\"></span>");
         s.appendTo(j.find(".psfn"));

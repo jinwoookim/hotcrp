@@ -381,7 +381,7 @@
         "type": "taglist", "parser": "Tag_SettingParser", "size": 50, "autogrow": true
     },
     "user_voting": {
-        "name": "User Voting",
+        "name": "Allow User Voting",
         "type": "checkbox"
     },
     "votes_per_user2": {

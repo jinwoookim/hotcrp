@@ -2,23 +2,23 @@
 #                          Generated on phpdocker.io                          #
 ###############################################################################
 #
-#hotcrp-mysql:
-#  image: mysql:5.7
-#  container_name: hotcrp-mysql
-#  volumes:
-#        - ..:/var/www/hotcrp
-#  environment:
-#    - MYSQL_ROOT_PASSWORD=user
-#    - MYSQL_DATABASE=hotcrp
-#    - MYSQL_USER=user
-#    - MYSQL_PASSWORD=user
+hotcrp-mysql:
+  image: mysql:5.7
+  container_name: hotcrp-mysql
+  volumes:
+      - /hcrp0/.:/hcrp0
+  environment:
+    - MYSQL_ROOT_PASSWORD=user
+    - MYSQL_DATABASE=hotcrp
+    - MYSQL_USER=user
+    - MYSQL_PASSWORD=user
 
 hotcrp-webserver:
   image: phpdockerio/nginx:latest
   container_name: hotcrp-webserver
   volumes:
-      - ..:/var/www/hotcrp
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - /hcrp0/.:/var/www/hotcrp
+      - /hcrp0/hotcrp-docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
   ports:
    - "9000:80"
   links:
@@ -29,7 +29,7 @@ hotcrp-php-fpm:
   dockerfile: php-fpm/Dockerfile
   container_name: hotcrp-php-fpm
   volumes:
-    - ..:/var/www/hotcrp
-    - ./php-fpm/php-ini-overrides.ini:/etc/php/7.0/fpm/conf.d/99-overrides.ini
-#  links:
-#    - hotcrp-mysql
+    - /hcrp0/.:/var/www/hotcrp
+    - /hcrp0/hotcrp-docker/php-fpm/php-ini-overrides.ini:/etc/php/7.0/fpm/conf.d/99-overrides.ini
+  links:
+    - hotcrp-mysql

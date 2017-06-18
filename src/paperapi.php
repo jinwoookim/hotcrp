@@ -108,8 +108,12 @@ class PaperApi {
 
         if($user->conf->setting("user_voting")) {
             $num_user_votes = $user->num_user_votes();
-            $vote_limit = $user->is_pc_member() || $user->is_admin() ? $user->conf->setting("votes_per_pc2") : $user->conf->setting("votes_per_user2");
-            $allow_clear = $qreq->addtags == "~vote#clear";
+            $vote_limit = $user->num_votes_total();
+            $votetag = $user->conf->setting_data("tag_approval", "vote");
+            $allow_clear = $qreq->addtags == "~".$votetag."#clear";
+            
+            #json_exit(["ok" => false, "error" => "Tag:" . $qreq->addtags ." : "  . $allow_clear ." ". $num_user_votes . " of ".  $vote_limit], true);
+            
             if (!$allow_clear && $num_user_votes >= $vote_limit) {
                 json_exit(["ok" => false, "error" => "vote limit reached"], true);
             }
@@ -117,6 +121,8 @@ class PaperApi {
                 json_exit(["ok" => false, "error" => "you cannot vote for your submission"], true);
             }
         }
+        else if( !$user->is_admin() && !$this->privChair )
+            json_exit(["ok" => false, "error" => "voting is closed"], true);
 
         // save tags using assigner
         $pids = [];

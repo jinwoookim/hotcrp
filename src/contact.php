@@ -683,7 +683,7 @@ class Contact {
 
     function viewable_tags(Contact $user) {
         if($user->is_author()){
-            $tags = $this-$this->all_contact_tags();
+            $tags = $this->all_contact_tags();
         }
         if ($user->isPC) {
             $tags = $this->all_contact_tags();
@@ -2995,10 +2995,18 @@ class Contact {
         }
     }
 
+    function num_votes_total() {
+        global $Me;
+        $vote_limit = 0;
+        if($Me->is_participant())
+            $vote_limit = $Me->is_pc_member() || $Me->is_admin() ? $Me->conf->setting("votes_per_pc2") : $Me->conf->setting("votes_per_user2");
+        return $vote_limit;
+    }
+    
     function num_user_votes(){
         global $Me;
         $votecnt = 0;
-        $sqlbase = "vote";
+        $sqlbase = $this->conf->setting_data("tag_approval", "vote");
         $result = $this->conf->q("select paperId, tag, tagIndex from PaperTag where tag like '%~{$sqlbase}'");
         $pvals = array();
         $cvals = array();
@@ -3016,8 +3024,6 @@ class Contact {
                 $votecnt++;
             }
         }return $votecnt;
-
-        //echo "<h1> uSER vOTES: $votecnt</h1>";
     }
 
     function perm_change_tag(PaperInfo $prow, $tag, $previndex, $index, $forceShow = null) {

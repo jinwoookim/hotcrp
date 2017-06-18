@@ -1339,10 +1339,11 @@ class PaperTable {
         $this->_papstripLeadShepherd("manager", "Paper administrator", $showedit || $this->qreq->atab === "manager", null);
     }
 
+    // TODO: remove num_user_votes ? contact.php has a valid version for this
     private function num_user_votes(){
         global $Me;
         $votecnt = 0;
-        $sqlbase = "vote";
+        $sqlbase = $this->conf->setting_data("tag_approval", "vote");
         $result = $this->conf->q("select paperId, tag, tagIndex from PaperTag where tag like '%~{$sqlbase}'");
         $pvals = array();
         $cvals = array();
@@ -1360,7 +1361,6 @@ class PaperTable {
                 $votecnt++;
             }
         }
-        echo "<h1> uSER vOTES: $votecnt</h1>";
     }
 
     private function papstripTags() {
@@ -1394,19 +1394,39 @@ class PaperTable {
 
             //$vt = $Me->conf->tags();
             //echo "<h1>".var_dump($vt)."</h1>";
-            $this->num_user_votes();
+            if($Me->conf->setting("user_voting"))                
+            {
+                echo '<div class="infoshowcnt"><span class="showvotecnt">';
+                $num_user_votes = $Me->num_user_votes();
+                $vote_limit = $Me->num_votes_total();
+                $available_votes = $vote_limit - $num_user_votes;
+                $votetag = $Me->conf->setting_data("tag_approval", "vote");
+                $msg_votes_left = 'Voting inactive';
+                $has_author = $this->prow->has_author($Me);
+                if ($available_votes <= 0)
+                    $msg_votes_left =  'You have already cast all your votes.';
+                else if($has_author)
+                    $msg_votes_left =  'You cannot vote for your own submission.';
+                else if($available_votes == 1)
+                    $msg_votes_left =  'You have one vote left.';
+                else
+                    $msg_votes_left =  'You have ' . $available_votes . ' votes left.';
+                echo '<tiny>',$msg_votes_left,'</tiny>';
+                echo '</div></span>';
+            }
 
             // uneditable
             echo '<div class="fn taghl">';
-            if ($treport->warnings)
-                echo Ht::xmsg("warning", join("<br>", $treport->warnings));
+            //$treport = self::tagreport($user, $prow);
+            //if ($treport->warnings)
+            //    echo Ht::xmsg("warning", join("<br>", $treport->warnings));
             echo ($tx === "" ? "None" : $tx), '</div>';
 
             echo '<div id="papstriptagsedit" class="fx"><div id="tagreportformresult">';
-            if ($treport->warnings)
-                echo Ht::xmsg("warning", join("<br>", $treport->warnings));
-            if ($treport->messages)
-                echo Ht::xmsg("info", join("<br>", $treport->messages));
+            //if ($treport->warnings)
+            //    echo Ht::xmsg("warning", join("<br>", $treport->warnings));
+            //if ($treport->messages)
+            //    echo Ht::xmsg("info", join("<br>", $treport->messages));
             echo "</div>";
             $editable = $tags;
             if ($this->prow)
