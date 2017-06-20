@@ -1396,23 +1396,28 @@ class PaperTable {
             //echo "<h1>".var_dump($vt)."</h1>";
             if($Me->conf->setting("user_voting"))                
             {
-                echo '<div class="infoshowcnt"><span class="showvotecnt">';
+                
                 $num_user_votes = $Me->num_user_votes();
                 $vote_limit = $Me->num_votes_total();
                 $available_votes = $vote_limit - $num_user_votes;
                 $votetag = $Me->conf->setting_data("tag_approval", "vote");
-                $msg_votes_left = 'Voting inactive';
-                $has_author = $this->prow->has_author($Me);
-                if ($available_votes <= 0)
-                    $msg_votes_left =  'You have already cast all your votes.';
-                else if($has_author)
-                    $msg_votes_left =  'You cannot vote for your own submission.';
-                else if($available_votes == 1)
-                    $msg_votes_left =  'You have one vote left.';
-                else
-                    $msg_votes_left =  'You have ' . $available_votes . ' votes left.';
-                echo '<tiny>',$msg_votes_left,'</tiny>';
-                echo '</div></span>';
+                //echo '<tiny>T:'.$vote_limit.'I:'. $Me->is_participant() .'N:'.$num_user_votes.'</tiny>';
+                if($vote_limit >= 0)
+                {
+                    echo '<div class="infoshowcnt"><span class="showvotecnt">';
+                    $msg_votes_left = 'Voting inactive';
+                    $has_author = $this->prow->has_author($Me);
+                    if ($available_votes <= 0)
+                        $msg_votes_left =  'You have already cast all your votes.';
+                    else if($has_author)
+                        $msg_votes_left =  'You cannot vote for your own submission.';
+                    else if($available_votes == 1)
+                        $msg_votes_left =  'You have one vote left.';
+                    else
+                        $msg_votes_left =  'You have ' . $available_votes . ' votes left.';
+                    echo '<tiny>',$msg_votes_left,'</tiny>';
+                    echo '</div></span>';
+                }
             }
 
             // uneditable

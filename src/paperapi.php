@@ -114,7 +114,7 @@ class PaperApi {
             
             #json_exit(["ok" => false, "error" => "Tag:" . $qreq->addtags ." : "  . $allow_clear ." ". $num_user_votes . " of ".  $vote_limit], true);
             
-            if (!$allow_clear && $num_user_votes >= $vote_limit) {
+            if (!$allow_clear && $num_user_votes >= $vote_limit && $vote_limit >= 0) {
                 json_exit(["ok" => false, "error" => "vote limit reached"], true);
             }
             if($prow->has_author($user)){

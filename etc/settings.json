@@ -386,12 +386,12 @@
     },
     "votes_per_user2": {
       "name": "vote_per_user 2",
-        "type": "zint", "size": 5, "placeholder": "none", "default_value": 4,
+        "type": "zint", "size": 5, "placeholder": "none", "default_value": 0,
         "extensible": true
     },
     "votes_per_pc2": {
         "name": "votes_per_pc 2",
-        "type": "zint", "size": 5, "placeholder": "none", "default_value": 10,
+        "type": "zint", "size": 5, "placeholder": "none", "default_value": -1,
         "extensible": true
     },
     "tag_rounds": {

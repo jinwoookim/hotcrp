@@ -2691,8 +2691,8 @@ class Contact {
     function can_view_comment(PaperInfo $prow, $crow, $forceShow) {
         $ctype = $crow ? $crow->commentType : COMMENTTYPE_AUTHOR;
         $rights = $this->rights($prow, $forceShow);
-
-        return ($crow && $crow->contactId == $this->contactId) // wrote this comment
+        //echo "c" .  $this->is_participant() . "t" . $ctype;
+        return $this->is_participant() || ($crow && $crow->contactId == $this->contactId) // wrote this comment
             || ($crow && $crow->contactId == $rights->review_token_cid)
             || $rights->can_administer
             || ($rights->act_author_view
@@ -2999,7 +2999,7 @@ class Contact {
         global $Me;
         $vote_limit = 0;
         if($Me->is_participant())
-            $vote_limit = $Me->is_pc_member() || $Me->is_admin() ? $Me->conf->setting("votes_per_pc2") : $Me->conf->setting("votes_per_user2");
+            $vote_limit = $Me->is_pc_member() || $Me->is_admin() ? $Me->conf->setting("votes_per_pc2",-1) : $Me->conf->setting("votes_per_user2",0);
         return $vote_limit;
     }
     
