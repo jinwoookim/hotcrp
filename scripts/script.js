@@ -3028,16 +3028,17 @@ function render_cmt(j, cj, editing, msg) {
 
     // header
     var is_author = cj.author_email && hotcrp_user.email && cj.author_email.toLowerCase() == hotcrp_user.email.toLowerCase();
+    var is_user = hotcrp_user.email !== undefined;
     hc.push('<div class="cmtt">', '</div>');
-    if (cj.is_new && !editing) {
+    if (cj.is_new && !editing && is_user) {
         hc.push('<h3><a class="q fn cmteditor" href="#">+&nbsp;', '</a></h3>');
         if (cj.response)
             hc.push_pop(cj.response == "1" ? "Add Response" : "Add " + cj.response + " Response");
         else
             hc.push_pop("Add Comment");
-    } else if (cj.is_new && !cj.response)
+    } else if (cj.is_new && !cj.response && is_user)
         hc.push('<h3>Add Comment</h3>');
-    else if ((cj.editable || is_author) && !editing) {
+    else if ((cj.editable || is_author) && !editing && is_user) {
         t = '<div class="cmtinfo floatright"><a href="#" class="xx editor cmteditor"><u>Edit</u></a></div>';
         cj.response ? $(t).prependTo(chead) : hc.push(t);
     }

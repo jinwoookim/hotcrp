@@ -1730,16 +1730,31 @@ class Conf {
             $t += $g;
         return $t === null || $t <= 0 || $t >= $Now;
     }
+
     function showAllPapers() {
         global $Me;
-        return ($Me->is_participant()
-                && ($this->setting("rev_showallusers")>0) 
-                && (($this->setting("rev_open")>0) 
-                    || ($this->deadlinesAfter("sub_open") 
-                        && ($this->setting("cmt_always")>0) )
-                    )
-                 )
-                ;
+
+        $show_allusers = $this->setting("rev_showallusers");
+
+
+        if($this->setting("rev_open") == 0 && (!($this->deadlinesAfter("sub_open")
+                && ($this->setting("cmt_always")>0)))){
+            return false;
+        }
+        if($show_allusers >= 3){
+            return true;
+        }
+        if($show_allusers >= 2 && !$Me->is_empty()){
+            return true;
+        }
+        if($show_allusers >= 1 && $Me->is_participant()){
+            return true;
+        }
+
+        if($show_allusers >= 0 && $Me->is_pc_member()){
+            return true;
+        }
+        return false;
     }
     
     function timeStartPaper() {

@@ -60,7 +60,17 @@ class SettingRenderer_Reviews extends SettingRenderer {
 
 function render(SettingValues $sv) {
     $sv->echo_checkbox("rev_open", "<b>Open site for reviewing</b>");
-    $sv->echo_checkbox("rev_showallusers", "Show all submissions to all participants (site must be open for reviews)");
+
+    echo '<div class="g">', $sv->label("rev_showallusers", "Show all submissions to all (site must be open for reviews):"),
+    '&nbsp; ',
+    $sv->render_select("rev_showallusers", [
+        0 => "PC",
+        1 => "Participants",
+        2 => "Registered Users",
+        3 => "Public"
+    ]),
+    '</div>';
+
     $sv->echo_checkbox("cmt_always", "Allow comments even if reviewing is closed");
 
     echo "<div class='g'></div>\n";
@@ -85,6 +95,10 @@ function render(SettingValues $sv) {
         6 => "Visible only to admins"
         ]), 
         '</div>';
+
+
+
+
         
     // Deadlines
     echo "<h3 id=\"rounds\" class=\"settings g\">Deadlines &amp; rounds</h3>\n";

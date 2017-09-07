@@ -236,8 +236,8 @@
         "require": "src/settings/s_reviews.php"
     },
     "rev_showallusers": {
-        "name": "Show all submissions to all participants ",
-        "type": "checkbox"
+        "name": "Show all submissions to all:",
+        "type": "radio", "values": [0,1,2,3], "default_value" : 0
     },
     "rev_ratings": {
         "name": "Collect ratings of reviews",
