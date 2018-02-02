@@ -47,6 +47,33 @@ You may need to restart the Apache web server after installing these
 packages (`sudo apachectl graceful` or `sudo apache2ctl graceful`). If
 using nginx, you will need the php-fpm package.
 
+Docker Installation
+------------
+1) Adjust:
+
+* `docker-compose.yml` = change mysql passwords
+* `phpdocker/php-fpm/msmtprc` = adjust email settings
+
+
+1) Start stack
+
+`docker-compose up`
+
+2) Only on first run: Initialize database
+
+```
+# attach to mysql docker 
+docker exec -i -t hashfrommysqldocker /bin/bash
+
+# create database
+# select no when asked for database creation, only fill database with scheme!!!!!
+./lib/createdb.sh --dbuser=hotcrp,hotcrppwd --user=root --password=rootpwd
+```
+
+3) On public server, expose port 80 explicit
+
+`docker-compose run --service-ports webserver`
+
 Installation
 ------------
 

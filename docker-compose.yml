@@ -1,0 +1,45 @@
+###############################################################################
+#                          Generated on phpdocker.io                          #
+###############################################################################
+version: "3.1"
+services:
+
+    mysql:
+      image: mysql:5.7
+      container_name: hotcrp-mysql
+      working_dir: /application
+      volumes:
+        - .:/application
+      command: --max_allowed_packet=104857600      # Set max_allowed_packet to 256M (or any other value)
+      environment:
+        - MYSQL_ROOT_PASSWORD=rootpwd
+        - MYSQL_DATABASE=hotcrp
+        - MYSQL_USER=hotcrp
+        - MYSQL_PASSWORD=hotcrppwd
+      ports:
+        - "9002:3306"
+
+    webserver:
+      image: nginx:alpine
+      container_name: hotcrp-webserver
+      working_dir: /application
+      volumes:
+          - .:/application
+          - ./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+       - "80:80"
+      expose:
+       - "80"
+
+    php-fpm:
+      build: phpdocker/php-fpm
+      container_name: hotcrp-php-fpm
+      working_dir: /application
+      links: 
+        - mysql
+      ports:
+        - "9000:9000"
+      volumes:
+        - .:/application
+        - ./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
+
