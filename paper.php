@@ -60,9 +60,12 @@ $newPaper = (defval($_REQUEST, "p") == "new"
              || defval($_REQUEST, "paperId") == "new");
 
 
-if (!$Me->is_participant() && !$newPaper && !$Conf->showAllPapers())
+
+$disallowAccess = !$Me->is_participant() && !$newPaper && !$Conf->showAllPapers();
+if (!$Me->is_author() && $disallowAccess){
     $Me->escape();
-             
+}
+
 // general error messages
 if (isset($_GET["post"]) && $_GET["post"] && !count($_POST))
     $Conf->post_missing_msg();
@@ -80,6 +83,9 @@ if (!$newPaper)
     loadRows();
 
 
+if(!$prow->has_author($Me) && $disallowAccess){
+  $Me->escape();
+}
 
 // paper actions
 if (isset($_REQUEST["setrevpref"]) && $prow && check_post()) {
