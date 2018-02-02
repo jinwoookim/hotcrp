@@ -63,14 +63,21 @@ Docker Installation
 
 ```
 # attach to mysql docker 
-docker exec -i -t hashfrommysqldocker /bin/bash
+docker exec -i -t hotcrp-mysql /bin/bash
 
 # create database
 # select no when asked for database creation, only fill database with scheme!!!!!
+# ok -> hotcrp -> n -> Y
 ./lib/createdb.sh --dbuser=hotcrp,hotcrppwd --user=root --password=rootpwd
 ```
 
-3) On public server, expose port 80 explicit
+3) control conf/options.php may add:
+
+```$xslt
+$Opt["dsn"] = "mysql://hotcrp:hotcrppwd@hotcrp-mysql:3306/hotcrp";
+```
+
+4) On public server, expose port 80 explicit
 
 `docker-compose run --service-ports webserver`
 
