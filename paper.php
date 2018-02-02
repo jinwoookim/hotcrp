@@ -83,7 +83,7 @@ if (!$newPaper)
     loadRows();
 
 
-if(!$newPaper && !$prow->has_author($Me) && $disallowAccess){
+if($prow && !$prow->has_author($Me) && $disallowAccess){
   $Me->escape();
 }
 
