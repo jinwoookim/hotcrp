@@ -77,9 +77,14 @@ docker exec -i -t hotcrp-mysql /bin/bash
 $Opt["dsn"] = "mysql://hotcrp:hotcrppwd@hotcrp-mysql:3306/hotcrp";
 ```
 
-4) On public server, expose port 80 explicit
+5) Check connection 
+
+`http://localhost:9000` 
+
+5.1) On public server, expose port 80 explicit
 
 `docker-compose run --service-ports webserver`
+
 
 Installation
 ------------
