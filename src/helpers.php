@@ -1099,6 +1099,11 @@ function pcMembers() {
     return $Conf->pc_members();
 }
 
+function auMembers() {
+    global $Conf;
+    return $Conf->au_members();
+}
+
 function pc_members_selector_options($include_none) {
     $sel = array();
     if ($include_none)

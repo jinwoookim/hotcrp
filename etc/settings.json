@@ -15,6 +15,10 @@
         "name": "Allow comments even if reviewing is closed",
         "type": "checkbox"
     },
+    "author_rev": {
+        "name": "Allow authors as reviewers (only for papers assigned by PC)",
+        "type": "checkbox"
+    },
     "decisions": {
         "parser": "Decision_SettingParser"
     },

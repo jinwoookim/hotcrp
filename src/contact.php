@@ -2465,10 +2465,11 @@ class Contact {
         if (!$prow)
             return $this->isPC && $this->conf->check_all_tracks($this, Track::ASSREV);
         $rights = $this->rights($prow);
-        return $rights->allow_pc_broad
-            && ($rights->review_type > 0
+        $def_rights = ($rights->review_type > 0
                 || $rights->allow_administer
                 || $this->conf->check_tracks($prow, $this, Track::ASSREV));
+        if(!$def_rights || $rights->allow_pc_broad || ($this->conf->setting("author_rev")>0))
+            return $def_rights;
     }
 
     function can_accept_review_assignment(PaperInfo $prow) {

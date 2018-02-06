@@ -1246,6 +1246,19 @@ class Conf {
         return $row ? (int) $row[0] : false;
     }
 
+# returns list of user ids where user is active (not disabled) and has submitted at least on paper that is currently not withdrawn
+    function au_members() {
+        $pc = array();
+        $result = $this->q("select firstName, lastName, affiliation, email, ContactInfo.contactId, roles, contactTags, disabled from ContactInfo where disabled = 0 and contactId in (select uniqauthors.contactId from ((select PaperConflict.contactId, max(PaperConflict.conflictType) as maxconflict from PaperConflict, Paper where Paper.paperId = PaperConflict.paperId and Paper.timeWithdrawn = 0 group by PaperConflict.contactId) as uniqauthors) where uniqauthors.maxconflict >=" . CONFLICT_AUTHOR . ")" );
+        while ($result && ($row = Contact::fetch($result, $this))) {
+            $pc[$row->contactId] = $row;
+        }
+        Dbl::free($result);
+        uasort($pc, "Contact::compare");
+        #$pc = array_filter($pc, function ($p) { return ($p->roles & Contact::ROLE_PC) != 0; });
+        return $pc;
+    }
+
     function pc_members() {
         if ($this->_pc_members_cache === null) {
             $pc = array();

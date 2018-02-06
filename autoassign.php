@@ -42,7 +42,7 @@ if (isset($Qreq->pcs) && is_array($Qreq->pcs)) {
     $pcsel = pcMembers();
 
 if (!isset($Qreq->pctyp)
-    || ($Qreq->pctyp !== "all" && $Qreq->pctyp !== "sel"))
+    || ($Qreq->pctyp !== "all" && $Qreq->pctyp !== "sel" && $Qreq->pctyp !== "au"))
     $Qreq->pctyp = "all";
 
 // bad pairs
@@ -339,6 +339,13 @@ class AutoassignerInterface {
                 return null;
             }
         }
+        else if($Qreq->pctyp === "au") {
+            $n = $autoassigner->select_auth(array_keys($pcsel));
+            if ($n == 0) {
+                Conf::msg_error("Select one or more authors to assign.");
+                return null;
+            }
+        }
         if ($Qreq->balance === "all")
             $autoassigner->set_balance(Autoassigner::BALANCE_ALL);
         foreach ($badpairs as $cid1 => $bp) {
@@ -571,7 +578,8 @@ echo "</table>\n";
 echo "<h3>PC members</h3>\n<table>\n";
 
 echo_radio_row("pctyp", "all", "Use entire PC");
-
+if ($this->conf->setting("author_rev")>0)
+    echo_radio_row("pctyp", "au", "Use only authors");
 echo_radio_row("pctyp", "sel", "Use selected PC members:", ["open" => true]);
 echo " &nbsp; (select ";
 $pctyp_sel = array(array("all", 1, "all"), array("none", 0, "none"));

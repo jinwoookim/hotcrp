@@ -72,7 +72,7 @@ function render(SettingValues $sv) {
     '</div>';
 
     $sv->echo_checkbox("cmt_always", "Allow comments even if reviewing is closed");
-
+    $sv->echo_checkbox("author_rev", "Allow authors as reviewers (only for papers assigned by PC)");
     echo "<div class='g'></div>\n";
     echo "<strong>Review anonymity:</strong> Are reviewer names hidden from authors?<br />\n";
     $sv->echo_radio_table("rev_blind", array(Conf::BLIND_ALWAYS => "Yes—reviews are anonymous",

@@ -32,12 +32,21 @@ if (is_string($qreq->papx))
     $qreq->papx = preg_split('/\s+/', $qreq->papx);
 
 $pcm = pcMembers();
+$member_name_str = 'PC member';
 $reviewer = cvtint($qreq->reviewer);
 if ($reviewer <= 0)
     $reviewer = $Me->contactId;
 $revuser = null;
-if ($reviewer > 0 && isset($pcm[$reviewer]))
-    $revuser = $pcm[$reviewer];
+if ($reviewer > 0) {
+    if(!isset($pcm[$reviewer]) && ($this->conf->setting("author_rev")>0)) {
+        $pcm = auMembers();
+        $member_name_str = 'Author';
+    }
+    if(!isset($pcm[$reviewer]))
+        $reviewer = 0;
+    else
+        $revuser = $pcm[$reviewer];
+}
 else
     $reviewer = 0;
 
@@ -175,7 +184,7 @@ foreach ($pcm as $pc)
     $rev_opt[$pc->contactId] = Text::name_html($pc, $textarg) . " ("
         . plural(defval($rev_count, $pc->contactId, 0), "assignment") . ")";
 
-echo "<table><tr><td><strong>PC member:</strong> &nbsp;</td>",
+echo "<table><tr><td><strong>". $member_name_str .":</strong> &nbsp;</td>",
     "<td>", Ht::select("reviewer", $rev_opt, $reviewer, array("onchange" => "hiliter(this)")), "</td></tr>",
     "<tr><td colspan='2'><div class='g'></div></td></tr>\n";
 

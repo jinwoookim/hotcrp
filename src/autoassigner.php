@@ -69,6 +69,18 @@ class Autoassigner {
         return count($this->pcm);
     }
 
+#TODO: support $pcids filtering
+    public function select_auth($pcids) {
+        $this->pcm = $this->load = [];
+        #$pcids = array_flip($pcids);
+        foreach ($this->conf->au_members() as $cid => $p)
+        {
+                $this->pcm[$cid] = $p;
+                $this->load[$cid] = 0;
+        }
+        return count($this->pcm);
+    }
+
     public function avoid_pair_assignment($pc1, $pc2) {
         if (!is_numeric($pc1)) {
             $pc1 = $this->conf->pc_member_by_email($pc1);
