@@ -1,2 +1,4 @@
 scripts/*.min.js -diff
 scripts/*.map -diff
+* text eol=lf
+* text eol=lf
