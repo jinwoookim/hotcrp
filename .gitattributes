@@ -1,4 +1,6 @@
 scripts/*.min.js -diff
 scripts/*.map -diff
-* text eol=lf
-* text eol=lf
+* text=false
+*.sh -text
+*.php -text
+*.yaml -text
