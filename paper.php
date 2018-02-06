@@ -60,9 +60,8 @@ $newPaper = (defval($_REQUEST, "p") == "new"
              || defval($_REQUEST, "paperId") == "new");
 
 
-
-$disallowAccess = !$Me->is_participant() && !$newPaper && !$Conf->showAllPapers();
-if (!$Me->is_author() && $disallowAccess){
+$allowAccess = ($Me->is_participant() && $Conf->showAllPapers()) || $newPaper ||  $Me->privChair || $Me->isPC;
+if (!$Me->is_author() && !$allowAccess) {
     $Me->escape();
 }
 
@@ -83,7 +82,7 @@ if (!$newPaper)
     loadRows();
 
 
-if($prow && !$prow->has_author($Me) && $disallowAccess){
+if($prow && !$prow->has_author($Me) && !$allowAccess){
   $Me->escape();
 }
 

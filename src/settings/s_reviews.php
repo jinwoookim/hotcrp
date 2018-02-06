@@ -167,6 +167,7 @@ function render(SettingValues $sv) {
         $sv->label("extrev_roundtag", "New external reviews use round&nbsp; "),
         Ht::select("extrev_roundtag", $extselector, $extround_value, $sv->sjs("extrev_roundtag")),
         '</div>';
+    $sv->echo_entry_row("rev_vis", "Reviews visible to authors" );
 
 
     // PC reviews

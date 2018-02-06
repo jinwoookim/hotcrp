@@ -251,6 +251,10 @@
         "name": "Assignment review round",
         "type": "tag", "parser": "Round_SettingParser"
     },
+    "rev_vis": {
+        "name": "Review visibility",
+        "type": "date"
+    },
     "review_form": {
         "parser": "ReviewForm_SettingParser", "require": "src/settings/s_reviewform.php",
         "type": "string"
