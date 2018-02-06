@@ -32,15 +32,19 @@ if (is_string($qreq->papx))
     $qreq->papx = preg_split('/\s+/', $qreq->papx);
 
 $pcm = pcMembers();
-$member_name_str = 'PC member';
+$member_type = 0;
+$member_name_str = array('PC member', 'Author');
 $reviewer = cvtint($qreq->reviewer);
 if ($reviewer <= 0)
     $reviewer = $Me->contactId;
 $revuser = null;
+$aum = [];
+if ($Conf->setting("author_rev",0)>0)
+    $aum = auMembers();
 if ($reviewer > 0) {
-    if(!isset($pcm[$reviewer]) && ($this->conf->setting("author_rev")>0)) {
-        $pcm = auMembers();
-        $member_name_str = 'Author';
+    if(!isset($pcm[$reviewer]) && (count($aum) > 0) && ($reviewer != $Me->contactId)) {
+        $pcm = $aum;
+        $member_type = 1;
     }
     if(!isset($pcm[$reviewer]))
         $reviewer = 0;
@@ -184,7 +188,7 @@ foreach ($pcm as $pc)
     $rev_opt[$pc->contactId] = Text::name_html($pc, $textarg) . " ("
         . plural(defval($rev_count, $pc->contactId, 0), "assignment") . ")";
 
-echo "<table><tr><td><strong>". $member_name_str .":</strong> &nbsp;</td>",
+echo "<table><tr><td><strong>". $member_name_str[$member_type] .":</strong> &nbsp;</td>",
     "<td>", Ht::select("reviewer", $rev_opt, $reviewer, array("onchange" => "hiliter(this)")), "</td></tr>",
     "<tr><td colspan='2'><div class='g'></div></td></tr>\n";
 
@@ -209,6 +213,8 @@ echo Ht::radio("kind", "a", $qreq->kind == "a",
                array("onchange" => "hiliter(this)")),
     "&nbsp;", Ht::label("Assign conflicts only (and limit papers to potential conflicts)"), "</td></tr>\n";
 
+if ($Conf->setting("author_rev",0)>0 && count($aum) > 0)
+    echo '<tr><td colspan="2"><a href="' . hoturl("manualassign", "reviewer=" . (($member_type==0)? array_keys($aum)[0] :"-1" )) .'">Switch to assign reviews to ' . $member_name_str[!$member_type] . '</a></td></tr>';
 echo '<tr><td colspan="2"><div class="aab aabr">',
     '<div class="aabut">', Ht::submit("Go", ["class" => "btn btn-default"]), '</div>',
     '</div></td></tr>',

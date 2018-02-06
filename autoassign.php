@@ -578,7 +578,7 @@ echo "</table>\n";
 echo "<h3>PC members</h3>\n<table>\n";
 
 echo_radio_row("pctyp", "all", "Use entire PC");
-if ($this->conf->setting("author_rev")>0)
+if ($Conf->setting("author_rev",0)>0)
     echo_radio_row("pctyp", "au", "Use only authors");
 echo_radio_row("pctyp", "sel", "Use selected PC members:", ["open" => true]);
 echo " &nbsp; (select ";
