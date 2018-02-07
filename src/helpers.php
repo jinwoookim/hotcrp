@@ -757,7 +757,7 @@ function tabLength($text, $all) {
 function ini_get_bytes($varname, $value = null) {
     $val = trim($value !== null ? $value : ini_get($varname));
     $last = strlen($val) ? strtolower($val[strlen($val) - 1]) : ".";
-    return $val * (1 << (+strpos(".kmg", $last) * 10));
+    return intval($val) * (1 << (+strpos(".kmg", $last) * 10));
 }
 
 function whyNotText($whyNot, $action, $suggest_redirection = false) {
