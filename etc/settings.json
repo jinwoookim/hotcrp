@@ -252,8 +252,12 @@
         "type": "tag", "parser": "Round_SettingParser"
     },
     "rev_vis": {
-        "name": "Review visibility",
+        "name": "Hide all reviews from authors until this deadline",
         "type": "date"
+    },
+    "rev_hide_unfinished": {
+        "name": "Hide reviews from authors from unfinished rounds",
+        "type": "checkbox"
     },
     "review_form": {
         "parser": "ReviewForm_SettingParser", "require": "src/settings/s_reviewform.php",
