@@ -59,8 +59,9 @@ function errorMsgExit($msg) {
 $newPaper = (defval($_REQUEST, "p") == "new"
              || defval($_REQUEST, "paperId") == "new");
 
-
-$allowAccess = ($Me->is_participant() && $Conf->showAllPapers()) || $newPaper ||  $Me->privChair || $Me->isPC || $Me->is_admin;
+$allowAccessUnconditional = $newPaper ||  $Me->privChair || $Me->isPC || $Me->is_admin;
+$allowAccessPart = $Me->is_participant() && $Conf->showAllPapers();
+$allowAccess = $allowAccessPart || $allowAccessUnconditional;
 if (!$Me->is_author() && !$allowAccess) {
     $Me->escape();
 }
@@ -82,7 +83,7 @@ if (!$newPaper)
     loadRows();
 
 
-if($prow && !$prow->has_author($Me) && !$allowAccess){
+if(!$allowAccessUnconditional && $prow && !$prow->has_author($Me) && (!$allowAccess || $prow->timeWithdrawn > 0)) {
   $Me->escape();
 }
 
