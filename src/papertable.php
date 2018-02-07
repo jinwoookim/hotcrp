@@ -2554,6 +2554,17 @@ class PaperTable {
         return $this->mycrows;
     }
 
+    function assigned_to_review_any() {
+        global $Me;
+        $prow = $this->prow;
+        foreach ($this->viewable_rrows as $cr) {
+              $curr_row_edit = $Me->is_my_review($cr);
+              if($curr_row_edit)
+                     return $curr_row_edit;
+        }
+        return $Me->can_review($prow, null, false);
+    }
+    
     function fixReviewMode() {
         global $Me;
         $prow = $this->prow;

@@ -60,7 +60,7 @@ $newPaper = (defval($_REQUEST, "p") == "new"
              || defval($_REQUEST, "paperId") == "new");
 
 
-$allowAccess = ($Me->is_participant() && $Conf->showAllPapers()) || $newPaper ||  $Me->privChair || $Me->isPC;
+$allowAccess = ($Me->is_participant() && $Conf->showAllPapers()) || $newPaper ||  $Me->privChair || $Me->isPC || $Me->is_admin;
 if (!$Me->is_author() && !$allowAccess) {
     $Me->escape();
 }

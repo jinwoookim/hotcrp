@@ -28,7 +28,7 @@ if ($Me->is_empty())
     $Me->escape();
 $rf = $Conf->review_form();
 
-
+$allowAccess = ($Me->is_participant() && $Conf->showAllPapers()) ||  $Me->privChair || $Me->isPC || $Me->is_admin;
 // header
 function confHeader() {
     global $paperTable;
@@ -64,6 +64,13 @@ function loadRows() {
 
 loadRows();
 
+if(!$allowAccess) {
+    $assignedAny = false;
+    if(($Conf->setting("author_rev")>0))
+        $assignedAny = $paperTable->assigned_to_review_any();
+    if(!$assignedAny)//check if any row applies to this reviewer
+        $Me->escape();
+}
 
 // general error messages
 if (isset($_REQUEST["post"]) && $_REQUEST["post"] && !count($_POST))
