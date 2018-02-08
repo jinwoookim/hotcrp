@@ -2381,7 +2381,7 @@ class Contact {
             || ($rights->allow_review
                 && $prow->review_not_incomplete($this)
                 && ($rights->allow_pc
-                    || $this->conf->setting("extrev_view") >= 2))
+                    || ($this->conf->setting("extrev_view") >= 2 && (($this->conf->setting("author_rev",0) <= 0)))))
             || !$this->conf->is_review_blind($rrow);
     }
 
@@ -2447,6 +2447,13 @@ class Contact {
             && $this->conf->setting("pcrev_any") > 0
             && $this->conf->time_review(null, true, true)
             && $this->conf->check_any_tracks($this, Track::UNASSREV);
+    }
+	
+    function assigned_to_review_any($prow) {
+        if (($prow->reviewContactId == $prow->myReviewContactId) 
+            && ( $prow->myReviewContactId == $this->contactId))
+            return true;
+        return $this->can_review($prow, null, false);
     }
 
     function timeReview(PaperInfo $prow, $rrow) {

@@ -82,9 +82,12 @@ $prow = null;
 if (!$newPaper)
     loadRows();
 
-
-if(!$allowAccessUnconditional && $prow && !$prow->has_author($Me) && (!$allowAccess || $prow->timeWithdrawn > 0)) {
-  $Me->escape();
+$may_review_paper_as_nonpc = false;
+if(!$allowAccessUnconditional && $prow && !$prow->has_author($Me) 
+    && (!$allowAccess || $prow->timeWithdrawn > 0)) { //generic access only for papers that are not withdrawn
+    $may_review_paper_as_nonpc = (($Conf->setting("author_rev",0) > 0) && $Me->assigned_to_review_any($prow));
+    if(!$may_review_paper_as_nonpc)
+        $Me->escape();
 }
 
 // paper actions
@@ -412,6 +415,10 @@ else if ($prow && $paperTable->mode === "edit") {
 
 // produce paper table
 confHeader();
+
+if($may_review_paper_as_nonpc && !$paperTable->assigned_to_review_any())
+    $Me->escape();
+
 $paperTable->paptabBegin();
 
 if ($paperTable->mode === "edit")

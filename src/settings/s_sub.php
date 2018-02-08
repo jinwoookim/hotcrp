@@ -24,6 +24,7 @@ function render(SettingValues $sv) {
     echo "</table>\n";
 
     $sv->echo_radio_table("sub_freeze", array(0 => "Allow updates until the submission deadline (usually the best choice)", 1 => "Authors must freeze the final version of each submission"));
+    $sv->echo_checkbox_row("sub_allow_withdraw", "Allow authors to withdraw regardless of deadlines (even during /after reviews)");
 
 
     echo "<div class=\"g\"></div><table id=\"foldpc_seeall\" class=\"foldo\"><tbody>\n";

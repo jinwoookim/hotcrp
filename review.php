@@ -66,7 +66,7 @@ loadRows();
 
 if(!$allowAccess) {
     $assignedAny = false;
-    if(($Conf->setting("author_rev")>0))
+    if(($Conf->setting("author_rev",0)>0))
         $assignedAny = $paperTable->assigned_to_review_any();
     if(!$assignedAny)//check if any row applies to this reviewer
         $Me->escape();

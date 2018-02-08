@@ -2075,6 +2075,9 @@ class PaperTable {
             $status_info = $Me->paper_status_info($this->prow);
             echo '<p class="xd"><div class="badge ', $status_info[0], '">',
                 htmlspecialchars($status_info[1]), "</div></p>";
+             if($Me->conf->setting("sub_allow_withdraw",0)) {
+                $this->echoActions(false);
+            }
             $this->paptabDownload();
             if ($this->paptabAbstract())
                 echo '<div class="paptab">';
