@@ -1471,6 +1471,9 @@ class Score_PaperColumn extends PaperColumn {
             $wrap_conflict = true;
             $scores = $row->viewable_scores($this->form_field, $pl->contact, true);
         }
+        //TODO: $this->form_field->view_score is null -> no correct check per review round possible
+        if($check_visibility_per_paper && !$pl->contact->can_view_review($row,$this->form_field->view_score, false))
+            $scores = false;
         if (!$scores)
             return "";
         $pl->need_render = true;

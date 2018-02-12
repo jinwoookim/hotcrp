@@ -2274,16 +2274,19 @@ class Contact {
             || ($rrow && $this->is_my_review($rrow)
                 && $viewscore >= VIEWSCORE_REVIEWERONLY))
             return true;
-        if (isset($rrow) && !$this->is_my_review($rrow) && !$this->is_admin && !$this->isPC && !$this->isChair) {
-            // Check visibility time-stamp setting
+        if (!$this->is_admin && !$this->isPC && !$this->isChair && !(isset($rrow) && $this->is_my_review($rrow))) {
+            // this is an author user; should not be allowed to see reviews unless allowed by decision system
+            if(!$rrow || (isset($prow) && !$this->can_some_author_view_submitted_review($prow)))
+               return false;
+            // Check visibility time-stamp setting; TODO: this does not work in the search.php view ($rrow is null)
             $vis_time = $this->conf->setting("rev_vis",0);
-            if( $vis_time && $vis_time > 0 && $vis_time < $Now)
+            if( $vis_time && $vis_time > 0 && $vis_time > $Now)
                 return false;
             if($this->conf->setting("rev_hide_unfinished",0)) {
                 //Check if this review is part of an unfinished round
                 $max_deadline = 0;
                 for ($cr = 0; $cr <= 4; $cr++) {
-                    $dn = $this->conf->review_deadline($rrow, false, false);
+                    $dn = $this->conf->review_deadline($rrow, $cr>1, ($cr % 2)==0);
                     $curr_deadline = $this->conf->setting($dn,0);
                     $max_deadline = max($max_deadline, $curr_deadline);
                 }

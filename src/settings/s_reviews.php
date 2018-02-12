@@ -167,8 +167,6 @@ function render(SettingValues $sv) {
         $sv->label("extrev_roundtag", "New external reviews use round&nbsp; "),
         Ht::select("extrev_roundtag", $extselector, $extround_value, $sv->sjs("extrev_roundtag")),
         '</div><br />';
-    $sv->echo_checkbox("rev_hide_unfinished", "Hide reviews of ongoing/unfinished rounds from authors " );
-    $sv->echo_entry_row("rev_vis", "Hide all reviews from authors until this deadline&nbsp;" );
     #echo '<br />';
     
 
