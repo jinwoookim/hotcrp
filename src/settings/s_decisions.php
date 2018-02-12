@@ -24,8 +24,8 @@ function render(SettingValues $sv) {
     $opts[Conf::AUSEEREV_TAGS] = "Yes, for papers with any of these tags:&nbsp; " . $sv->render_entry("tag_au_seerev", ["onfocus" => "$('#au_seerev_" . Conf::AUSEEREV_TAGS . "').click()"]);
     $sv->echo_radio_table("au_seerev", $opts);
     echo Ht::hidden("has_tag_au_seerev", 1);
-    #$sv->echo_checkbox("rev_hide_unfinished", "Hide reviews of ongoing/unfinished rounds from authors " );
-    #$sv->echo_entry_row("rev_vis", "Hide all reviews from authors until this deadline&nbsp;" );
+    $sv->echo_checkbox("rev_hide_unfinished", "Hide reviews of rounds with ongoing deadlines from authors " );
+    $sv->echo_entry_row("rev_vis", "Hide all reviews from authors until this deadline&nbsp;" );
     
     // Authors' response
     echo '<div class="g"></div><table id="foldauresp" class="fold2o">';

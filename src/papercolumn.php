@@ -1471,8 +1471,9 @@ class Score_PaperColumn extends PaperColumn {
             $wrap_conflict = true;
             $scores = $row->viewable_scores($this->form_field, $pl->contact, true);
         }
-        //TODO: $this->form_field->view_score is null -> no correct check per review round possible
-        if($check_visibility_per_paper && !$pl->contact->can_view_review($row,$this->form_field->view_score, false))
+        //TODO: $this->form_field->view_score is null -> no correct check per review round possible; currently can_view_review will default to hiding the OverMer in these cases
+        $check_visibility_per_paper = !$pl->contact->is_admin && !$pl->contact->isPC && !$pl->contact->this->isChair;
+        if($check_visibility_per_paper && !$pl->contact->can_view_review($row,$this->form_field->view_score, false, NULL, true))
             $scores = false;
         if (!$scores)
             return "";
