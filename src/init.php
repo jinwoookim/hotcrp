@@ -81,7 +81,7 @@ define("ALWAYS_OVERRIDE", 9999);
 
 global $Now, $ConfSitePATH;
 $Now = time();
-$ConfSitePATH = null;
+$ConfSitePATH = "/application";
 
 
 // set $ConfSitePATH (path to conference site)
@@ -151,7 +151,7 @@ class SiteLoader {
         else
             $files = ["$ConfSitePATH/conf/options.php", "$ConfSitePATH/conf/options.inc", "$ConfSitePATH/Code/options.inc"];
         foreach ($files as $f)
-            if ((@include $f) !== false) {
+            if ((include $f) !== false) {
                 $Opt["loaded"][] = $f;
                 break;
             }

@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 ## createdb.sh -- HotCRP database setup
 ## HotCRP is Copyright (c) 2006-2017 Eddie Kohler and Regents of the UC
 ## Distributed under an MIT-like license; see LICENSE
@@ -403,7 +403,7 @@ then
 SOURCENAME="%"
 fi
 
-if ["$MYCREATEDB_USER" = "$DBUSER"]; then
+if [ "$MYCREATEDB_USER" = "$DBUSER" ]; then
     echo "Warning: You are using the same user for creating and later accessing the database. This is considered to be bad practise (permissions wise). "
     createuser=n
 fi
